@@ -1,0 +1,71 @@
+def list_layers(ob):
+    return([i for i, j in enumerate(ob.layers) if j])
+
+def is_list_overlap(l1,l2):
+    return(any(n in l1 for n in l2))
+
+def is_sharing_layers(a,b):
+    return is_list_overlap(list_layers(a),list_layers(b))
+
+
+def select_posebone(pb, select=1):
+    '''Select / Deselect given poseBone'''
+    pb.bone.select=select
+    pb.bone.select_tail=select
+    pb.bone.select_head=select
+
+def select_bone(bone, select=1):
+    '''Select / Deselect given Bone'''
+    bone.select=select
+    bone.select_tail=select
+    bone.select_head=select
+
+def set_select(ob,select=1):
+    '''select passed object, bone or posebone'''
+    m = bpy.context.mode
+    if m == 'POSE':
+        select_posebone(ob,select)
+    elif m == 'EDIT_ARMATURE':
+        select_bone(ob,select)
+    else:
+        ob.select = select
+
+def get_selection():
+    '''return selection of current context'''
+    m = bpy.context.mode
+    if m == 'POSE':
+        return bpy.context.selected_pose_bones
+    elif m == 'EDIT_ARMATURE':
+        return bpy.context.selected_bones
+    else:
+        return bpy.context.selected_objects
+
+def get_active():
+    '''return active object of current context'''
+    m = bpy.context.mode
+    if m == 'POSE':
+        return bpy.context.active_pose_bone
+    elif m == 'EDIT_ARMATURE':
+        return bpy.context.active_bone
+    else:
+        return bpy.context.active_object
+
+def get_selectable():
+    '''return all selectable object of current context'''
+    m = bpy.context.mode
+    if m == 'POSE':
+        armlayers = list_layers(bpy.context.object.data)
+        return [pb for pb in bpy.context.object.pose.bones if is_list_overlap(armlayers,list_layers(pb.bone))]
+
+    elif m == 'EDIT_ARMATURE':
+        armlayers = list_layers(bpy.context.object.data)
+        return [b for b in bpy.context.object.data.bones if is_list_overlap(armlayers,list_layers(b))]
+
+    else:
+        return bpy.context.selectable_objects
+
+#---
+act = get_active()
+selection = get_selection()
+other = [ob for ob in get_selection() if ob != act]
+all = get_selectable()
