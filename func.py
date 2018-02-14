@@ -44,7 +44,7 @@ def openFolder(folderpath):
         return('//')
 
     #double quote the path to avoid problem with special character
-    folderpath = '"' + folderpath + '"'
+    folderpath = '"' + os.path.normpath(folderpath) + '"'
     fullcmd = cmd + folderpath
 
     #print & launch open command
