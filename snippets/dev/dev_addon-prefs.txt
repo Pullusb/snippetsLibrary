@@ -25,10 +25,10 @@ class My_addon_pref(bpy.types.AddonPreferences):
 #insertion order in register (if keymap, else use register (__modules__) )
 def register():
     if not bpy.app.background:
-        bpy.utils.register_class(My__addon_pref)
+        bpy.utils.register_class(My_addon_pref)
         register_keymaps()
 
 def unregister():
     if not bpy.app.background:
         unregister_keymaps()
-        bpy.utils.unregister_class(My__addon_pref)
+        bpy.utils.unregister_class(My_addon_pref)
