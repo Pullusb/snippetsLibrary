@@ -7,11 +7,11 @@ from .func import *
 ###--- UI List items
 
 # ui list item actions
-class Uilist_actions(bpy.types.Operator):
+class SNIPPETSLIB_OT_actions(bpy.types.Operator):
     bl_idname = "sniptool.list_action"
     bl_label = "List Action"
 
-    action = bpy.props.EnumProperty(
+    action : bpy.props.EnumProperty(
         items=(
             ('UP', "Up", ""),
             ('DOWN', "Down", ""),
@@ -73,7 +73,7 @@ class Uilist_actions(bpy.types.Operator):
 # -------------------------------------------------------------------
 
 # sniptool list
-class UL_items(UIList):
+class SNIPPETSLIB_UL_items(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         #split = layout.split(0.3)
@@ -87,9 +87,9 @@ class UL_items(UIList):
         pass
 
 # draw the panel
-class UIListPanelExample(Panel):
+class SNIPPETSLIB_PT_uiList(Panel):
     """Creates a Panel in the Object properties window"""
-    bl_idname = 'OBJECT_PT_my_panel'
+    bl_idname = 'SNIPPETSLIB_PT_ui_panel'
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
     bl_label = "Snippets List"
@@ -106,7 +106,7 @@ class UIListPanelExample(Panel):
         row = layout.row()
         row.operator("sniptool.template_insert", icon="LIBRARY_DATA_DIRECT")#LIBRARY_DATA_DIRECT RIGHTARROW FORWARD
         row = layout.row()
-        row.template_list("UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
+        row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
 
         col = row.column(align=True)
         # col.operator("sniptool.list_action", icon='ZOOMIN', text="").action = 'ADD'
@@ -119,13 +119,13 @@ class UIListPanelExample(Panel):
         col = row.column(align=True)
         col.separator()
         col.prop(context.scene, 'new_snippets_name', text='snippets name')
-        col.operator("sniptool.save_snippet", icon="SAVE_COPY")
+        col.operator("sniptool.save_snippet", icon="COPYDOWN")#SAVE_COPY
         col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER")
         # col.separator()
 
 
 
-class Uilist_saveSnippet(bpy.types.Operator):
+class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
     bl_idname = "sniptool.save_snippet"
     bl_label = "save snippet"
     bl_description = "save selection to a file named after this"
@@ -158,7 +158,7 @@ class Uilist_saveSnippet(bpy.types.Operator):
 
 
 # insert button
-class Uilist_insertTemplate(bpy.types.Operator):
+class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
     bl_idname = "sniptool.template_insert"
     bl_label = "insert List Item"
     bl_description = "insert Item in textBlock"
@@ -215,7 +215,7 @@ class Uilist_insertTemplate(bpy.types.Operator):
 
 
 # relaod button
-class Uilist_reloadItems(bpy.types.Operator):
+class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
     bl_idname = "sniptool.reload_list"
     bl_label = "Reload List"
     bl_description = "Reload all items in the list"
@@ -250,7 +250,7 @@ class Uilist_reloadItems(bpy.types.Operator):
         return{'FINISHED'}
 
 
-class OpenSnippetsFolder(bpy.types.Operator):
+class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):
     bl_idname = "sniptool.open_snippet_folder"
     bl_label = "open library folder"
     bl_description = "open snippets folder location"
@@ -267,6 +267,6 @@ class OpenSnippetsFolder(bpy.types.Operator):
         return{'FINISHED'}
 
 # Create sniptool property group
-class sniptoolProp(bpy.types.PropertyGroup):
+class SNIPPETSLIB_sniptoolProp(bpy.types.PropertyGroup):
     '''name = StringProperty() '''
-    id = IntProperty()
+    id : IntProperty()

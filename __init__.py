@@ -22,8 +22,8 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 0, 1),
-    "blender": (2, 78, 0),
+    "version": (0, 0, 2),
+    "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
     "wiki_url": "",
@@ -51,12 +51,12 @@ modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in local
  
 class snippetsPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
-    snippets_custom_path = bpy.props.BoolProperty(
+    snippets_custom_path : bpy.props.BoolProperty(
         name='Use custom path',
         description="Set a cutom directory for snippets library",
         default=False)
  
-    snippets_filepath = bpy.props.StringProperty(
+    snippets_filepath : bpy.props.StringProperty(
         name="Snippets folder",
         subtype='FILE_PATH',
         )
@@ -76,20 +76,38 @@ class snippetsPreferences(bpy.types.AddonPreferences):
 # register
 ##################################
 
+classes = (
+SNIPPETSLIB_OT_actions,
+SNIPPETSLIB_OT_saveSnippet,
+SNIPPETSLIB_OT_insertTemplate,
+SNIPPETSLIB_OT_reloadItems,
+SNIPPETSLIB_OT_OpenSnippetsFolder,
+SNIPPETSLIB_sniptoolProp,
+SNIPPETSLIB_UL_items,
+SNIPPETSLIB_PT_uiList,
+snippetsPreferences,
+)
+
 import traceback
 
 def register():
-    try: bpy.utils.register_module(__name__)
-    except: traceback.print_exc()
+    try:
+        for cls in classes:
+            bpy.utils.register_class(cls)
+    except:
+        traceback.print_exc()
 
     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
-    bpy.types.Scene.sniptool = CollectionProperty(type=sniptoolProp)
+    bpy.types.Scene.sniptool = CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
     bpy.types.Scene.sniptool_index = IntProperty()
 
 
 def unregister():
-    try: bpy.utils.unregister_module(__name__)
-    except: traceback.print_exc()
+    try:
+        for cls in classes:
+            bpy.utils.unregister_class(cls)
+    except:
+        traceback.print_exc()
 
     print("Unregistered {}".format(bl_info["name"]))
     del bpy.types.Scene.sniptool

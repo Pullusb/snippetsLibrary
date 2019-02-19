@@ -11,8 +11,8 @@ def get_addon_prefs():
     #print ('addon_name', addon_name)
     #print('--name--', __name__)
     addon_name = os.path.splitext(__name__)[0]
-    user_preferences = bpy.context.user_preferences
-    addon_prefs = user_preferences.addons[addon_name].preferences
+    preferences = bpy.context.preferences
+    addon_prefs = preferences.addons[addon_name].preferences
     return (addon_prefs)
 
 def openFolder(folderpath):
@@ -53,7 +53,7 @@ def openFolder(folderpath):
 
 
 def locateLibrary(justGet=False):
-    #addon = bpy.context.user_preferences.addons.get('snippetsLibrary')
+    #addon = bpy.context.preferences.addons.get('snippetsLibrary')
     # print (addon)
     # prefs = addon.preferences
     prefs = get_addon_prefs()
