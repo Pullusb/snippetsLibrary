@@ -1,3 +1,5 @@
+### --- REGISTER ---
+
 register, unregister = bpy.utils.register_classes_factory(classes)
 
 '''#detailed
