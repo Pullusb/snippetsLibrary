@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 0, 2),
+    "version": (0, 0, 3),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
@@ -31,7 +31,7 @@ bl_info = {
 
 
 import bpy
-from bpy.props import IntProperty, CollectionProperty #, StringProperty 
+from bpy.props import IntProperty, CollectionProperty #, StringProperty
 
 # load and reload submodules
 ##################################
@@ -48,19 +48,19 @@ modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in local
 
 
 ### addon preferences panel
- 
+
 class snippetsPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
     snippets_custom_path : bpy.props.BoolProperty(
         name='Use custom path',
         description="Set a cutom directory for snippets library",
         default=False)
- 
+
     snippets_filepath : bpy.props.StringProperty(
         name="Snippets folder",
         subtype='FILE_PATH',
         )
- 
+
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "snippets_custom_path")
@@ -112,7 +112,7 @@ def unregister():
     print("Unregistered {}".format(bl_info["name"]))
     del bpy.types.Scene.sniptool
     del bpy.types.Scene.sniptool_index
-    
+
 
 if __name__ == "__main__":
     register()

@@ -92,6 +92,7 @@ class SNIPPETSLIB_PT_uiList(Panel):
     bl_idname = 'SNIPPETSLIB_PT_ui_panel'
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
+    bl_category = "Dev"
     bl_label = "Snippets List"
 
     bpy.types.Scene.new_snippets_name = bpy.props.StringProperty(description='name that snippets will take, name will be generated')
