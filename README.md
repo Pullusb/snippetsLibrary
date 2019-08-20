@@ -5,6 +5,8 @@ Blender addon - personnal snippets library in text editor
 
 Looking for the blender 2.7 version ? [go to this repo](https://github.com/Pullusb/snippetsLibrary279)
 
+### [Demo Youtube](https://youtu.be/Rs4y7DeHkp8)
+
 ---  
 
 Panel in the Misc category of the text editor's toolbar  
