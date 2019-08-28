@@ -13,3 +13,14 @@ Panel in the Misc category of the text editor's toolbar
 Shipped with a personal pack of usefull code snippets (once installed just click the reload button in the addon UI)
 
 Works in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier
+
+---
+
+### Changelog:
+
+
+  v0.1.1 2019-08-29:
+  - New UI
+  - new button to delete snippets from UI with confirmation pop-up
+  - adding a new snippet is now done from a pop-up
+  - fix bug when inserting without active text block
