@@ -1,8 +1,8 @@
 '''
-Copyright (C) 2017 YOUR NAME
-YOUR@MAIL.com
+Copyright (C) 2017 Samuel Bernou
+Bernou.samuel@gmail.com
 
-Created by YOUR NAME
+Created by Samuel Bernou
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,9 +22,10 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 0, 3),
+    "version": (0, 1, 1),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
+
     "warning": "",
     "wiki_url": "",
     "category": "Text Editor" }
@@ -85,6 +86,7 @@ SNIPPETSLIB_OT_OpenSnippetsFolder,
 SNIPPETSLIB_sniptoolProp,
 SNIPPETSLIB_UL_items,
 SNIPPETSLIB_PT_uiList,
+SNIPPETSLIB_OT_deleteSnippet,
 snippetsPreferences,
 )
 

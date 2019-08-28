@@ -15,8 +15,8 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
         items=(
             ('UP', "Up", ""),
             ('DOWN', "Down", ""),
-            ('REMOVE', "Remove", ""),
-            ('ADD', "Add", ""),
+            # ('REMOVE', "Remove", ""),
+            # ('ADD', "Add", ""),
         )
     )
 
@@ -33,16 +33,18 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
             if self.action == 'DOWN' and idx < len(scn.sniptool) - 1:
                 item_next = scn.sniptool[idx+1].name
                 scn.sniptool_index += 1
-                info = 'Item %d selected' % (scn.sniptool_index + 1)
-                self.report({'INFO'}, info)
+                # info = 'Item %d selected' % (scn.sniptool_index + 1)
 
             elif self.action == 'UP' and idx >= 1:
                 item_prev = scn.sniptool[idx-1].name
                 scn.sniptool_index -= 1
-                info = 'Item %d selected' % (scn.sniptool_index + 1)
-                self.report({'INFO'}, info)
+                # info = 'Item %d selected' % (scn.sniptool_index + 1)
+            
+            # self.report({'INFO'}, info)
 
-            elif self.action == 'REMOVE':
+
+        """
+             elif self.action == 'REMOVE':
                 info = 'Item %s removed from list' % (scn.sniptool[scn.sniptool_index].name)
                 scn.sniptool_index -= 1
                 self.report({'INFO'}, info)
@@ -62,6 +64,7 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
                 self.report({'INFO'}, info)
             else:
                 self.report({'warning'}, 'nothing selected')
+        """
 
         return {"FINISHED"}
 
@@ -95,7 +98,7 @@ class SNIPPETSLIB_PT_uiList(Panel):
     bl_category = "Dev"
     bl_label = "Snippets List"
 
-    bpy.types.Scene.new_snippets_name = bpy.props.StringProperty(description='name that snippets will take, name will be generated')
+    # bpy.types.Scene.new_snippets_name = bpy.props.StringProperty(description='name that snippets will take, name will be generated')
 
     def draw(self, context):
         layout = self.layout
@@ -103,39 +106,84 @@ class SNIPPETSLIB_PT_uiList(Panel):
 
         rows = 2
         row = layout.row()
+        """ # refresh and insert above list
         row.operator("sniptool.reload_list", icon="FILE_REFRESH")
         row = layout.row()
-        row.operator("sniptool.template_insert", icon="LIBRARY_DATA_DIRECT")#LIBRARY_DATA_DIRECT RIGHTARROW FORWARD
-        row = layout.row()
+        row.operator("sniptool.template_insert", icon="FORWARD")
+        row = layout.row() """
         row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
 
         col = row.column(align=True)
         # col.operator("sniptool.list_action", icon='ZOOMIN', text="").action = 'ADD'
         # col.operator("sniptool.list_action", icon='ZOOMOUT', text="").action = 'REMOVE'
+        col.operator("sniptool.reload_list", icon="FILE_REFRESH", text="")
+        col.operator("sniptool.template_insert", icon="FORWARD", text="")#LIBRARY_DATA_DIRECT RIGHTARROW PASTEDOWN LIBRARY_DATA_DIRECT NODE_INSERT_OFF
         col.separator()
         col.operator("sniptool.list_action", icon='TRIA_UP', text="").action = 'UP'
         col.operator("sniptool.list_action", icon='TRIA_DOWN', text="").action = 'DOWN'
-
-        row = layout.row()
-        col = row.column(align=True)
         col.separator()
-        col.prop(context.scene, 'new_snippets_name', text='snippets name')
-        col.operator("sniptool.save_snippet", icon="COPYDOWN")#SAVE_COPY
-        col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER")
+        col.operator("sniptool.save_snippet", icon="ADD", text="")
+        col.operator("sniptool.delete_confirm_dialog", icon="REMOVE", text="")
+        col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER",  text="")
+        # row = layout.row()
+        # col = row.column(align=True)
         # col.separator()
+        # col.prop(context.scene, 'new_snippets_name', text='snippets name')
+        # col.operator("sniptool.save_snippet", icon="PLUS")#SAVE_COPY COPYDOWN
+        # col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER")
 
+class SNIPPETSLIB_OT_deleteSnippet(bpy.types.Operator):
+    """Delete selected snippet (show a confirmation popup)"""
+    bl_idname = "sniptool.delete_confirm_dialog"
+    bl_label = "Delete snippet"
+    bl_options = {'REGISTER', 'INTERNAL'}
 
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        scn = bpy.context.scene
+        snip = scn.sniptool[scn.sniptool_index].name
+        idx = scn.sniptool_index
+
+        fp = get_snippet(snip)
+        try:
+            os.remove(fp)
+        except Exception as e:
+            message = 'Error trying to delete {}\n'.format(fp, e)
+            return {'CANCELLED'}
+
+        info = 'Item %s removed from list' % (snip)
+        if scn.sniptool_index > 0: scn.sniptool_index -= 1
+        self.report({'INFO'}, info)
+        scn.sniptool.remove(idx)
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.snip = bpy.context.scene.sniptool[bpy.context.scene.sniptool_index].name
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text='Do you really want to delete "{}"'.format(self.snip))
+        layout.label(text='This operation delete the snippet file (cant be undone)')
+        
 
 class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
     bl_idname = "sniptool.save_snippet"
-    bl_label = "save snippet"
-    bl_description = "save selection to a file named after this"
+    bl_label = "Save snippet"
+    bl_description = "Save text selection to a new snippet\nPopup a field to name the new snippet"
+    bl_options = {'REGISTER', 'INTERNAL'}
+    
+    newsnip: bpy.props.StringProperty()
+
 
     def execute(self, context):
         scn = context.scene
         library = locateLibrary()
         if library:
-            snipname = clipit(context)
+            snipname = clipit(context, self.newsnip)
             if snipname:
                 item = scn.sniptool.add()
                 item.id = len(scn.sniptool)
@@ -156,24 +204,35 @@ class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)
         return{'FINISHED'}
+    
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text='Chose a name for this snippet')
+        layout.prop(self, "newsnip", text="Name")
 
 
 # insert button
 class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
     bl_idname = "sniptool.template_insert"
-    bl_label = "insert List Item"
-    bl_description = "insert Item in textBlock"
+    bl_label = "Insert snippet"
+    bl_description = "Insert selected snippet at cursor location"
+    bl_options = {'REGISTER', 'INTERNAL'}
 
     def execute(self, context):
         scn = context.scene
         if locateLibrary():
+            snip = scn.sniptool[scn.sniptool_index].name
             text = getattr(bpy.context.space_data, "text", None)
             if text:
                 pass
                 #print(text.name)
             else:
-                pass
-                #print('no text data')
+                #create new text-block if not any
+                text = bpy.data.texts.new(snip)# get the name of the snippets if no text datablock
+                context.space_data.text = text
 
             #context override for the ops.text.insert() function
             override = {'window': context.window,
@@ -182,7 +241,6 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
                         'space': context.space_data,
                         'edit_text' : text
                         }
-            snip = scn.sniptool[scn.sniptool_index].name
 
             Loaded_text = load_text(get_snippet(snip))
             #get character position in text
@@ -219,7 +277,8 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
 class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
     bl_idname = "sniptool.reload_list"
     bl_label = "Reload List"
-    bl_description = "Reload all items in the list"
+    bl_description = "Reload snippets list from disk"
+    # bl_options = {'REGISTER', 'INTERNAL'}
 
     def execute(self, context):
         scn = context.scene
@@ -253,8 +312,9 @@ class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
 
 class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):
     bl_idname = "sniptool.open_snippet_folder"
-    bl_label = "open library folder"
-    bl_description = "open snippets folder location"
+    bl_label = "Open library folder"
+    bl_description = "Open snippets folder location"
+    # bl_options = {'REGISTER', 'INTERNAL'}#internal means it will be hided from the search.
 
     def execute(self, context):
         scn = context.scene

@@ -1,5 +1,5 @@
 import bpy
-import os
+import os, re
 import textwrap
 
 
@@ -137,7 +137,7 @@ def get_snippet(name):
     else:
         return(1)
 
-def clipit(context):
+def clipit(context, name):
     library = locateLibrary()
     bpy.ops.text.copy()
     clip = bpy.context.window_manager.clipboard
@@ -145,9 +145,13 @@ def clipit(context):
         #print (clip)
         ###kill preceding spaces before saving (allow to copy at indentation 0)
         clip = textwrap.dedent(clip)
-        if context.scene.new_snippets_name:
-            snipname = context.scene.new_snippets_name + '.txt'
+        # name = context.scene.new_snippets_name.strip()
+        name = name.strip()
+        if name:
+            if not re.search(r'\..{2-4}$', name):#check for an existing extension
+                snipname = name + '.txt'
         else:#generate Unique snipName
+            print('no name specified, generating a placeholder')
             from random import randrange
             import time
             snipname = 'snip'+ str(randrange(999)) + time.strftime("_%Y-%m-%d_%H-%M-%S") +'.txt'
