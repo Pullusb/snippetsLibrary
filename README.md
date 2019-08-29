@@ -14,12 +14,17 @@ Shipped with a personal pack of usefull code snippets (once installed just click
 
 Works in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier
 
+
+Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
+
 ---
 
 ### Changelog:
 
+  v0.1.3 2019-08-29:
+  - Added snippets preview area
 
-  v0.1.1 2019-08-29:
+  v0.1.1 2019-08-28:
   - New UI
   - new button to delete snippets from UI with confirmation pop-up
   - adding a new snippet is now done from a pop-up

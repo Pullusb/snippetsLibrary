@@ -123,6 +123,10 @@ class SNIPPETSLIB_PT_uiList(Panel):
                 pass
 
 
+# -------------------------------------------------------------------
+# OPS
+# -------------------------------------------------------------------
+
 class SNIPPETSLIB_OT_deleteSnippet(bpy.types.Operator):
     """Delete selected snippet (show a confirmation popup)"""
     bl_idname = "sniptool.delete_confirm_dialog"
