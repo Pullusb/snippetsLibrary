@@ -53,6 +53,7 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
 class SNIPPETSLIB_UL_items(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        self.use_filter_show = True
         #split = layout.split(0.3)
         ##add to draw index (useless)
         #split.label("%d" % (index))
@@ -80,16 +81,16 @@ class SNIPPETSLIB_PT_uiList(Panel):
 
         rows = 2
         row = layout.row()
+
         """ # refresh and insert above list
         row.operator("sniptool.reload_list", icon="FILE_REFRESH")
         row = layout.row()
         row.operator("sniptool.template_insert", icon="FORWARD")
         row = layout.row() """
+
         row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
 
         col = row.column(align=True)
-        # col.operator("sniptool.list_action", icon='ZOOMIN', text="").action = 'ADD'
-        # col.operator("sniptool.list_action", icon='ZOOMOUT', text="").action = 'REMOVE'
         col.operator("sniptool.reload_list", icon="FILE_REFRESH", text="")
         col.operator("sniptool.template_insert", icon="FORWARD", text="")#LIBRARY_DATA_DIRECT RIGHTARROW PASTEDOWN LIBRARY_DATA_DIRECT NODE_INSERT_OFF
         col.separator()
@@ -99,12 +100,28 @@ class SNIPPETSLIB_PT_uiList(Panel):
         col.operator("sniptool.save_snippet", icon="ADD", text="")
         col.operator("sniptool.delete_confirm_dialog", icon="REMOVE", text="")
         col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER",  text="")
-        # row = layout.row()
-        # col = row.column(align=True)
-        # col.separator()
-        # col.prop(context.scene, 'new_snippets_name', text='snippets name')
-        # col.operator("sniptool.save_snippet", icon="PLUS")#SAVE_COPY COPYDOWN
-        # col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER")
+
+        """ # add menu under ui list
+        row = layout.row()
+        col = row.column(align=True)
+        col.separator()
+        col.prop(context.scene, 'new_snippets_name', text='snippets name')
+        col.operator("sniptool.save_snippet", icon="PLUS")#SAVE_COPY COPYDOWN
+        col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER") """
+
+        # Preview zone
+        row = layout.row()
+        prev_icon = 'HIDE_OFF' if bpy.context.scene.sniptool_preview_use else 'HIDE_ON'
+        row.prop(scn, 'sniptool_preview_use', text='Preview', icon=prev_icon)#FILE_TEXT
+        if bpy.context.scene.sniptool_preview_use:
+            if bpy.context.scene.sniptool_preview:
+                # box.prop(scn, 'sniptool_preview', text='')# '\n' not recognised, split in multiple labels
+                box = layout.box()
+                for l in bpy.context.scene.sniptool_preview.split('\n'):
+                    box.label(text=l)
+            else:
+                pass
+
 
 class SNIPPETSLIB_OT_deleteSnippet(bpy.types.Operator):
     """Delete selected snippet (show a confirmation popup)"""
@@ -247,6 +264,41 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
         return{'FINISHED'}
 
 
+def reload_snippets():
+    preview_enabled = False
+    if bpy.context.scene.sniptool_preview_use:
+        preview_enabled = True
+        bpy.context.scene.sniptool_preview_use = False
+
+    scn = bpy.context.scene
+    lst = scn.sniptool
+    current_index = scn.sniptool_index
+    library = locateLibrary()
+    if library:
+        allsnip = reload_folder(library)
+
+        if len(lst) > 0:#remove all item in list
+            # reverse range to remove last item first
+            for i in range(len(lst)-1,-1,-1):
+                scn.sniptool.remove(i)
+            #self.report({'INFO'}, "All items removed")
+
+        for snipname in allsnip:#populate list
+            item = scn.sniptool.add()
+            item.id = len(scn.sniptool)
+            item.name = snipname
+        
+        scn.sniptool_index = (len(scn.sniptool)-1)
+            #info = '%s added to list' % (item.name)
+
+        # else:
+        #     self.report({'INFO'}, "Nothing to add")
+        if preview_enabled:
+            bpy.context.scene.sniptool_preview_use = True
+    else:
+        return (1)
+
+
 # relaod button
 class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
     bl_idname = "sniptool.reload_list"
@@ -255,29 +307,8 @@ class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
     # bl_options = {'REGISTER', 'INTERNAL'}
 
     def execute(self, context):
-        scn = context.scene
-        lst = scn.sniptool
-        current_index = scn.sniptool_index
-        library = locateLibrary()
-        if library:
-            allsnip = reload_folder(library)
-
-            if len(lst) > 0:#remove all item in list
-                # reverse range to remove last item first
-                for i in range(len(lst)-1,-1,-1):
-                    scn.sniptool.remove(i)
-                #self.report({'INFO'}, "All items removed")
-
-            for snipname in allsnip:#populate list
-                item = scn.sniptool.add()
-                item.id = len(scn.sniptool)
-                item.name = snipname
-                scn.sniptool_index = (len(scn.sniptool)-1)
-                #info = '%s added to list' % (item.name)
-
-            # else:
-            #     self.report({'INFO'}, "Nothing to add")
-        else:
+        error = reload_snippets()
+        if error:
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)
 

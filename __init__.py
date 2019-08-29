@@ -100,9 +100,14 @@ def register():
 
     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
     bpy.types.Scene.sniptool = CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
-    # bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func, set=set_update_func, get=get_update_func)
+    # bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func, set=set_update_func)
     bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func)
-
+    bpy.types.Scene.sniptool_preview = bpy.props.StringProperty()
+    bpy.types.Scene.sniptool_preview_use = bpy.props.BoolProperty(default=True)
+    
+    #launch first reload automatically
+    # reload_snippets()#still bad context... cant access scene from pref.
+    # bpy.ops.sniptool.reload_list()#not the right context
 
 def unregister():
     try:

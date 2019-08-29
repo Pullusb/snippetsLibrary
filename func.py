@@ -1,11 +1,53 @@
 import bpy
 import os, re
 import textwrap
+import time
 
 def update_func(self, context):
+    '''called when a new snippets is selected'''
+
+    """ if bpy.context.scene.sniptool_insert_on_clic:
+        bpy.ops.sniptool.template_insert() """
+
+    if bpy.context.scene.sniptool_preview_use:
+        print('update call', time.strftime('%H:%M:%S'))#debug to find when update is called
+        # Change preview content
+        select_snip = bpy.context.scene.sniptool[bpy.context.scene.sniptool_index].name
+        fp = get_snippet(select_snip)
+        if not fp:
+            print('impossible to find', select_snip)
+            return
+        content = load_text(fp)
+        if not content:
+            print('problem while getting content of:', fp)
+        
+        # get first lines of the text for to feed preview
+        lines = []
+        truncated = False
+        if fp:
+            with open(fp, 'r') as fd:
+                for i, l in enumerate(fd.readlines()):
+                    if i > 10:#limit of line to preview
+                        truncated = True
+                        break
+                    lines.append(l)
+
+        preview = ''.join(lines)
+        if truncated: preview += '...'
+
+        # feed preview
+        bpy.context.scene.sniptool_preview = preview
+
+    return
+
+def set_update_func(self, value):
     # update_func
-    pass
-    print("update change !", self)
+    print("on set !", value)
+    # bpy.ops.sniptool.template_insert()
+
+def get_update_func(self):
+    # update_func
+    print("on get !", self)
     # bpy.ops.sniptool.template_insert()
 
 def get_addon_prefs():
