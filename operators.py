@@ -42,33 +42,7 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
             
             # self.report({'INFO'}, info)
 
-
-        """
-             elif self.action == 'REMOVE':
-                info = 'Item %s removed from list' % (scn.sniptool[scn.sniptool_index].name)
-                scn.sniptool_index -= 1
-                self.report({'INFO'}, info)
-                scn.sniptool.remove(idx)
-
-        if self.action == 'ADD':
-            ###---mypart
-            snipname = clipit(context)
-            if snipname:
-                item = scn.sniptool.add()
-                item.id = len(scn.sniptool)
-
-                item.name = os.path.splitext(snipname)[0]
-
-                scn.sniptool_index = (len(scn.sniptool)-1)
-                info = '%s added to list' % (item.name)
-                self.report({'INFO'}, info)
-            else:
-                self.report({'warning'}, 'nothing selected')
-        """
-
         return {"FINISHED"}
-
-
 
 
 # -------------------------------------------------------------------
@@ -99,7 +73,7 @@ class SNIPPETSLIB_PT_uiList(Panel):
     bl_label = "Snippets List"
 
     # bpy.types.Scene.new_snippets_name = bpy.props.StringProperty(description='name that snippets will take, name will be generated')
-
+    
     def draw(self, context):
         layout = self.layout
         scn = bpy.context.scene
@@ -330,4 +304,4 @@ class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):
 # Create sniptool property group
 class SNIPPETSLIB_sniptoolProp(bpy.types.PropertyGroup):
     '''name = StringProperty() '''
-    id : IntProperty()
+    id : IntProperty(update=update_func)

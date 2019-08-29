@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 1, 2),
+    "version": (0, 1, 3),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
@@ -100,7 +100,7 @@ def register():
 
     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
     bpy.types.Scene.sniptool = CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
-    bpy.types.Scene.sniptool_index = IntProperty()
+    bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func, set=set_update_func, get=get_update_func)
 
 
 def unregister():
