@@ -4,17 +4,8 @@ import textwrap
 
 def update_func(self, context):
     # update_func
-    print("change !", self)
-    # bpy.ops.sniptool.template_insert()
-
-def set_update_func(self, context):
-    # update_func
-    print("on set !", self)
-    # bpy.ops.sniptool.template_insert()
-
-def get_update_func(self, context):
-    # update_func
-    print("on get !", self)
+    pass
+    print("update change !", self)
     # bpy.ops.sniptool.template_insert()
 
 def get_addon_prefs():
