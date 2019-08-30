@@ -3,6 +3,13 @@ import os, re
 import textwrap
 import time
 
+def scan_definitions(text):
+    'return a list of all def and class'
+    # print(text)
+    # print('------------')
+    # return capture group (avoid the : of the end)
+    return re.findall(r'^((?:def|class) [-\w]+\([-\w,\. =]*\)):', text, re.MULTILINE)
+
 def update_func(self, context):
     '''called when a new snippets is selected'''
 
@@ -10,7 +17,8 @@ def update_func(self, context):
         bpy.ops.sniptool.template_insert() """
 
     if bpy.context.scene.sniptool_preview_use:
-        print('update call', time.strftime('%H:%M:%S'))#debug to find when update is called
+        # print('update call', time.strftime('%H:%M:%S'))#debug to find when update is called
+        
         # Change preview content
         select_snip = bpy.context.scene.sniptool[bpy.context.scene.sniptool_index].name
         fp = get_snippet(select_snip)
@@ -24,31 +32,31 @@ def update_func(self, context):
         # get first lines of the text for to feed preview
         lines = []
         truncated = False
-        if fp:
-            with open(fp, 'r') as fd:
-                for i, l in enumerate(fd.readlines()):
-                    if i > 10:#limit of line to preview
-                        truncated = True
-                        break
-                    lines.append(l)
 
+        defs = None
+        # with open(fp, 'r') as fd:
+            # for i, l in enumerate(fd.readlines()):
+        for i, l in enumerate(content.splitlines(True)):
+            if i > 10:#limit of line to preview
+                truncated = True
+                break
+            lines.append(l)
+    
         preview = ''.join(lines)
-        if truncated: preview += '...'
+        if truncated: preview += '. . .'
+
+        defs = scan_definitions(content)
+        deflist = ''
+        if defs:
+            #before preview -> # deflist = '{0} Functions/classes:\n- {1}\n{2}\n\n'.format(str(len(defs)), '\n- '.join(defs), '*-*-*-*-*-*-*-*-*-*-*-*-*')#**------**\n
+            #after preview -> deflist = '\n\n{2}\n{0} Functions/classes:\n- {1}'.format(str(len(defs)), '\n- '.join(defs), '*-*-*-*-*-*-*-*-*-*-*-*-*')
+            deflist = '{0} Functions/classes:\n- {1}'.format(str(len(defs)), '\n- '.join(defs))
 
         # feed preview
         bpy.context.scene.sniptool_preview = preview
-
+        bpy.context.scene.sniptool_preview_defs = deflist
     return
 
-def set_update_func(self, value):
-    # update_func
-    print("on set !", value)
-    # bpy.ops.sniptool.template_insert()
-
-def get_update_func(self):
-    # update_func
-    print("on get !", self)
-    # bpy.ops.sniptool.template_insert()
 
 def get_addon_prefs():
     #addon_name = os.path.splitext(os.path.basename(os.path.abspath(__file__)))[0]
@@ -61,6 +69,7 @@ def get_addon_prefs():
     preferences = bpy.context.preferences
     addon_prefs = preferences.addons[addon_name].preferences
     return (addon_prefs)
+
 
 def openFolder(folderpath):
     """

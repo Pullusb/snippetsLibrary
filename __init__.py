@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 1, 3),
+    "version": (0, 1, 4),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
@@ -104,6 +104,7 @@ def register():
     bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func)
     bpy.types.Scene.sniptool_preview = bpy.props.StringProperty()
     bpy.types.Scene.sniptool_preview_use = bpy.props.BoolProperty(default=True)
+    bpy.types.Scene.sniptool_preview_defs = bpy.props.StringProperty()
     
     #launch first reload automatically
     # reload_snippets()#still bad context... cant access scene from pref.

@@ -110,17 +110,23 @@ class SNIPPETSLIB_PT_uiList(Panel):
         col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER") """
 
         # Preview zone
-        row = layout.row()
+        box = layout.box()
+        row = box.column()
         prev_icon = 'HIDE_OFF' if bpy.context.scene.sniptool_preview_use else 'HIDE_ON'
         row.prop(scn, 'sniptool_preview_use', text='Preview', icon=prev_icon)#FILE_TEXT
         if bpy.context.scene.sniptool_preview_use:
             if bpy.context.scene.sniptool_preview:
                 # box.prop(scn, 'sniptool_preview', text='')# '\n' not recognised, split in multiple labels
-                box = layout.box()
+                # box = layout.box()
                 for l in bpy.context.scene.sniptool_preview.split('\n'):
-                    box.label(text=l)
-            else:
-                pass
+                    row.label(text=l)
+            
+            # def scan box 
+            if bpy.context.scene.sniptool_preview_defs:
+                box = layout.box()
+                row = box.column()
+                for l in bpy.context.scene.sniptool_preview_defs.split('\n'):
+                    row.label(text=l)
 
 
 # -------------------------------------------------------------------

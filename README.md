@@ -21,6 +21,9 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 ### Changelog:
 
+  v0.1.4 2019-08-30:
+  - the preview integrate a list of definitions ans classes of the file
+
   v0.1.3 2019-08-29:
   - Added snippets preview area
 
