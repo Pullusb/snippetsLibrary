@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 1, 4),
+    "version": (0, 2, 0),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
@@ -61,16 +61,27 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         subtype='FILE_PATH',
         )
 
+    snippets_preview_line_number : bpy.props.IntProperty(
+        name='Preview line number',
+        description="Choose number of lines to display when previewing lines (default=10)",
+        min=1,
+        soft_max=500,
+        max=2000,
+        default=10)
+
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, "snippets_custom_path")
+        layout.prop(self, "snippets_preview_line_number")
+        layout.separator()
         layout.label(text="Snippets will be saved as invidual files")
         layout.label(text="in a folder named 'snippets' (created at first use)")
         layout.label(text="located aside the addon file (unless you enter a custom path)")
+        layout.prop(self, "snippets_custom_path")
         if self.snippets_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")
+        
 
 
 # register
@@ -86,6 +97,7 @@ SNIPPETSLIB_sniptoolProp,
 SNIPPETSLIB_UL_items,
 SNIPPETSLIB_PT_uiList,
 SNIPPETSLIB_OT_deleteSnippet,
+SNIPPETSLIB_OT_searchItems,
 snippetsPreferences,
 )
 
@@ -103,8 +115,10 @@ def register():
     # bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func, set=set_update_func)
     bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func)
     bpy.types.Scene.sniptool_preview = bpy.props.StringProperty()
-    bpy.types.Scene.sniptool_preview_use = bpy.props.BoolProperty(default=True)
+    bpy.types.Scene.sniptool_preview_use = bpy.props.BoolProperty(default=True, description='If enabled show a preview of the snippets and list its methods')
     bpy.types.Scene.sniptool_preview_defs = bpy.props.StringProperty()
+    bpy.types.Scene.sniptool_search = bpy.props.StringProperty(description='Note: The search is case sensitive')
+
     
     #launch first reload automatically
     # reload_snippets()#still bad context... cant access scene from pref.
@@ -120,7 +134,10 @@ def unregister():
     print("Unregistered {}".format(bl_info["name"]))
     del bpy.types.Scene.sniptool
     del bpy.types.Scene.sniptool_index
-
+    del bpy.types.Scene.sniptool_preview
+    del bpy.types.Scene.sniptool_preview_use
+    del bpy.types.Scene.sniptool_preview_defs
+    del bpy.types.Scene.sniptool_search
 
 if __name__ == "__main__":
     register()

@@ -1,5 +1,7 @@
 import bpy
 import os
+from os.path import splitext, basename, join
+import time
 from bpy.types import Panel, UIList
 from bpy.props import IntProperty, CollectionProperty #, StringProperty
 
@@ -58,7 +60,7 @@ class SNIPPETSLIB_UL_items(UIList):
         ##add to draw index (useless)
         #split.label("%d" % (index))
         #split.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
-        ##delete icon to remove sheets icons (alsouseless)
+        ##delete icon to remove sheets icons (also useless)
         layout.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
 
     def invoke(self, context, event):
@@ -91,8 +93,12 @@ class SNIPPETSLIB_PT_uiList(Panel):
         row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
 
         col = row.column(align=True)
+        ## possible icon for insert : #LIBRARY_DATA_DIRECT RIGHTARROW LIBRARY_DATA_DIRECT NODE_INSERT_OFF
+        col.operator("sniptool.template_insert", icon="PASTEDOWN", text="").standalone = False
+        col.operator("sniptool.template_insert", icon="DUPLICATE", text="").standalone = True#TEXT
+        col.separator()
         col.operator("sniptool.reload_list", icon="FILE_REFRESH", text="")
-        col.operator("sniptool.template_insert", icon="FORWARD", text="")#LIBRARY_DATA_DIRECT RIGHTARROW PASTEDOWN LIBRARY_DATA_DIRECT NODE_INSERT_OFF
+        col.operator("sniptool.search_content", icon="ZOOM_ALL", text="")
         col.separator()
         col.operator("sniptool.list_action", icon='TRIA_UP', text="").action = 'UP'
         col.operator("sniptool.list_action", icon='TRIA_DOWN', text="").action = 'DOWN'
@@ -189,7 +195,7 @@ class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
                 item = scn.sniptool.add()
                 item.id = len(scn.sniptool)
 
-                item.name = os.path.splitext(snipname)[0]
+                item.name = splitext(snipname)[0]
 
                 scn.sniptool_index = (len(scn.sniptool)-1)
                 info = '%s added to list' % (item.name)
@@ -222,15 +228,14 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
     bl_description = "Insert selected snippet at cursor location"
     bl_options = {'REGISTER', 'INTERNAL'}
 
+    standalone : bpy.props.BoolProperty(default=False)
+
     def execute(self, context):
         scn = context.scene
         if locateLibrary():
             snip = scn.sniptool[scn.sniptool_index].name
             text = getattr(bpy.context.space_data, "text", None)
-            if text:
-                pass
-                #print(text.name)
-            else:
+            if not text or self.standalone:
                 #create new text-block if not any
                 text = bpy.data.texts.new(snip)# get the name of the snippets if no text datablock
                 context.space_data.text = text
@@ -321,8 +326,123 @@ class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
         if error:
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)
+            return{'CANCELLED'}
 
         return{'FINISHED'}
+
+
+# search inside the content, "reload" the list with only compatible snippets
+class SNIPPETSLIB_OT_searchItems(bpy.types.Operator):
+    bl_idname = "sniptool.search_content"
+    bl_label = "Search inside snippets"
+    bl_description = "Like reload but listing only matching snippets.\nSearch in content and title.\n(can be slow if a there is a lot of snippets or slow time access to disk/server)"
+    # bl_options = {'REGISTER', 'INTERNAL'}
+
+    case_sensitive : bpy.props.BoolProperty(
+        name='Case sensitive',
+        description="Use a case sensitive search",
+        default=False)
+
+    use_regex : bpy.props.BoolProperty(
+        name='Use regex',
+        default=False,
+        description='If enabled you can enter a Regular expressions pattern in the searchfield\n(Case sensitive option is take into account)')#text='use regex'
+
+
+    def execute(self, context):
+        scn = bpy.context.scene
+        search_term = scn.sniptool_search.strip()
+        if not search_term:
+            self.report({'ERROR'}, 'Search field is empty')
+            return{'CANCELLED'}
+
+        preview_enabled = False
+        if bpy.context.scene.sniptool_preview_use:
+            preview_enabled = True
+            bpy.context.scene.sniptool_preview_use = False
+
+        reg = None
+        if self.use_regex:
+            try:
+                if self.case_sensitive:
+                    reg = re.compile(search_term)
+                else:
+                    reg = re.compile(search_term, flags=re.I)# for case insensitive search
+
+            except Exception as e:
+                message = "Error with entered regex:\n%s" % str(e)
+                self.report({'ERROR'}, message)
+                return{'CANCELLED'}
+
+        lst = scn.sniptool
+        current_index = scn.sniptool_index
+
+        library = locateLibrary()
+        if library:
+            start = time.time()
+            allsnip = snippetsList = []
+            for root, dirs, files in os.walk(library, topdown=True):
+                for f in files:
+                    if f.endswith('.txt') or f.endswith('.py'):
+                        fp = join(root, f)
+                        with open(fp, 'r') as fd:
+                            #search in content and title.
+                            if self.use_regex:#regex search
+                                if reg.search(fd.read()) or reg.search(f):
+                                    snippetsList.append(splitext(basename(f))[0])
+                            
+                            else:#classic search
+                                if self.case_sensitive:
+                                    if search_term in fd.read() or search_term in f: #search_term.lower() in fd.read().lower()
+                                        snippetsList.append(splitext(basename(f))[0])
+                                else:
+                                    if search_term.lower() in fd.read().lower() or search_term.lower() in f.lower(): #
+                                        snippetsList.append(splitext(basename(f))[0])
+
+            print('searching time: {:.4f}s'.format(time.time() - start) )
+
+            if not allsnip:
+                self.report({'ERROR'}, 'Nothing matched')
+                return{'CANCELLED'}
+
+            ## populate the list with result of the search
+            if len(lst) > 0:#remove all item in list
+                # reverse range to remove last item first
+                for i in range(len(lst)-1,-1,-1):
+                    scn.sniptool.remove(i)
+                #self.report({'INFO'}, "All items removed")
+
+            for snipname in allsnip:#populate list
+                item = scn.sniptool.add()
+                item.id = len(scn.sniptool)
+                item.name = snipname
+            
+            scn.sniptool_index = (len(scn.sniptool)-1)
+                #info = '%s added to list' % (item.name)
+
+            # else:
+            #     self.report({'INFO'}, "Nothing to add")
+            if preview_enabled:
+                bpy.context.scene.sniptool_preview_use = True
+
+        else:
+            pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
+            self.report({'ERROR'}, pathErrorMsg)
+            return{'CANCELLED'}
+   
+        return{'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def draw(self, context):
+        layout = self.layout
+        row=layout.row(align=True)
+        # layout.label(text='search')
+        row.prop(self, "case_sensitive")
+        row.prop(self, "use_regex")
+        layout = self.layout
+        layout.prop(bpy.context.scene, "sniptool_search", text="Find")
 
 
 class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):

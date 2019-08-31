@@ -18,6 +18,8 @@ def update_func(self, context):
 
     if bpy.context.scene.sniptool_preview_use:
         # print('update call', time.strftime('%H:%M:%S'))#debug to find when update is called
+        prefs = get_addon_prefs()
+        preview_linum = prefs.snippets_preview_line_number
         
         # Change preview content
         select_snip = bpy.context.scene.sniptool[bpy.context.scene.sniptool_index].name
@@ -37,7 +39,7 @@ def update_func(self, context):
         # with open(fp, 'r') as fd:
             # for i, l in enumerate(fd.readlines()):
         for i, l in enumerate(content.splitlines(True)):
-            if i > 10:#limit of line to preview
+            if i > preview_linum:#limit of line to preview
                 truncated = True
                 break
             lines.append(l)
@@ -114,7 +116,7 @@ def locateLibrary(justGet=False):
     # prefs = addon.preferences
     prefs = get_addon_prefs()
     cust_path = prefs.snippets_custom_path
-    cust_fp = prefs.snippets_filepath 
+    cust_fp = prefs.snippets_filepath
     if cust_path:#specified user location
         if cust_fp:
             snipDir = bpy.path.abspath(cust_fp)
