@@ -62,8 +62,8 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         )
 
     snippets_preview_line_number : bpy.props.IntProperty(
-        name='Preview line number',
-        description="Choose number of lines to display when previewing lines (default=10)",
+        name='Max preview lines',
+        description="Choose number of lines to display on a snippet preview (default=10)",
         min=1,
         soft_max=500,
         max=2000,
