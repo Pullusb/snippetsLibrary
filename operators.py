@@ -234,9 +234,15 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
             snip = scn.sniptool[scn.sniptool_index].name
             text = getattr(bpy.context.space_data, "text", None)
             if not text or self.standalone:
+                pref = get_addon_prefs()
                 #create new text-block if not any
                 text = bpy.data.texts.new(snip)# get the name of the snippets if no text datablock
                 context.space_data.text = text
+                ### Since it's code Toggling ON some coding space data basic feature #maybe add in pref to choose basic behavior (in devtool todo too)
+                context.space_data.show_line_numbers = pref.snippets_show_line_numbers
+                context.space_data.show_word_wrap = pref.snippets_show_word_wrap
+                context.space_data.show_syntax_highlight = pref.snippets_show_syntax_highlight
+                context.space_data.show_line_highlight = pref.snippets_show_line_highlight
 
             #context override for the ops.text.insert() function
             override = {'window': context.window,

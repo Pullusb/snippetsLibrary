@@ -69,18 +69,49 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         max=2000,
         default=10)
 
+    snippets_show_line_numbers : bpy.props.BoolProperty(
+        name='show line numbers',
+        description="activate line numbers by defaut",
+        default=True)
+
+    snippets_show_word_wrap : bpy.props.BoolProperty(
+        name='show word wrap',
+        description="activate word wrap by defaut",
+        default=False)
+
+    snippets_show_syntax_highlight : bpy.props.BoolProperty(
+        name='show syntax highlight',
+        description="activate syntax highlight by defaut",
+        default=True)
+    snippets_show_line_highlight : bpy.props.BoolProperty(
+        name='show line highlight',
+        description="activate line highlight by defaut",
+        default=False)
+
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, "snippets_preview_line_number")
-        layout.separator()
-        layout.label(text="Snippets will be saved as invidual files")
-        layout.label(text="in a folder named 'snippets' (created at first use)")
-        layout.label(text="located aside the addon file (unless you enter a custom path)")
         layout.prop(self, "snippets_custom_path")
         if self.snippets_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")
+
+        layout.separator()
+        layout.label(text='Preview preferences:')
+        layout.prop(self, "snippets_preview_line_number")
+
+        layout.separator()
+        layout.label(text="When creating new text block, what properties to activate :")
+        layout.prop(self, "snippets_show_line_numbers")
+        layout.prop(self, "snippets_show_word_wrap")
+        layout.prop(self, "snippets_show_syntax_highlight")
+        layout.prop(self, "snippets_show_line_highlight")     
+
+        layout.separator()
+        # layout.label(text="infos:")
+        layout.label(text="Snippets will be saved as invidual files")
+        layout.label(text="in a folder named 'snippets' (created at first use)")
+        layout.label(text="located aside the addon file (unless you enter a custom path)")
         
 
 

@@ -24,7 +24,8 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
   v0.2.0 2019-08-31:
   - New feature : Search in content (search in content and filename). act like reload with a filtering when populating the list
   - New snippet standalone add mode (instead of inserting in current text, create a new text block)
-  - New option in user preferences : choose max line number for preview (default 10)
+  - New option in user preferences : Choose max line number for preview (default 10)
+  - New option in user preferences : When auto-creating a new textblock choose wich text editor option to toggle on.
   - Better tooltips
 
   v0.1.4 2019-08-30:
