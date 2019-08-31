@@ -21,6 +21,10 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 ### Changelog:
 
+  v0.2.1 2019-08-31:
+  - Search box now pre-fill with selection in the text (if highlight do not go over one line)
+  - UI changes
+
   v0.2.0 2019-08-31:
   - New feature : Search in content (search in content and filename). act like reload with a filtering when populating the list
   - New snippet standalone add mode (instead of inserting in current text, create a new text block)

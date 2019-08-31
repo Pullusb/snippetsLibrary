@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 2, 0),
+    "version": (0, 2, 1),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar",
     "warning": "",
@@ -70,26 +70,30 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         default=10)
 
     snippets_show_line_numbers : bpy.props.BoolProperty(
-        name='show line numbers',
+        name='Show line numbers',
         description="activate line numbers by defaut",
         default=True)
 
     snippets_show_word_wrap : bpy.props.BoolProperty(
-        name='show word wrap',
+        name='Show word wrap',
         description="activate word wrap by defaut",
         default=False)
 
     snippets_show_syntax_highlight : bpy.props.BoolProperty(
-        name='show syntax highlight',
+        name='Show syntax highlight',
         description="activate syntax highlight by defaut",
         default=True)
     snippets_show_line_highlight : bpy.props.BoolProperty(
-        name='show line highlight',
+        name='Show line highlight',
         description="activate line highlight by defaut",
         default=False)
 
     def draw(self, context):
         layout = self.layout
+        layout.use_property_split = True
+        # flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        # layout = flow.column()
+        
         layout.prop(self, "snippets_custom_path")
         if self.snippets_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"

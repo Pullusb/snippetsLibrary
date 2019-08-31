@@ -109,6 +109,61 @@ def openFolder(folderpath):
     print(fullcmd)
     os.system(fullcmd)
 
+def get_selected_text(self, text, one_line=False):
+    """
+    get selected text (whitout using copy buffer)
+    if no selection return None
+    If one_line == True, if selection goes over one line return None.
+    Function from Dalai Felinto (dfelinto)
+    """
+    current_line = text.current_line
+    select_end_line = text.select_end_line
+
+    current_character = text.current_character
+    select_end_character = text.select_end_character
+
+    # if there is no selected text return None
+    if current_line == select_end_line:
+        if current_character == select_end_character:
+            return None
+        else:
+            return current_line.body[min(current_character,select_end_character):max(current_character,select_end_character)]
+
+    if one_line:
+        return
+
+    text_return = None
+    writing = False
+    normal_order = True # selection from top to bottom
+
+    for line in text.lines:
+        if not writing:
+            if line == current_line:
+                text_return = current_line.body[current_character:] + "\n"
+                writing = True
+                continue
+            elif line == select_end_line:
+                text_return =  select_end_line.body[select_end_character:] + "\n"
+                writing = True
+                normal_order = False
+                continue
+        else:
+            if normal_order:
+                if line == select_end_line:
+                    text_return += select_end_line.body[:select_end_character]
+                    break
+                else:
+                    text_return += line.body + "\n"
+                    continue
+            else:
+                if line == current_line:
+                    text_return += current_line.body[:current_character]
+                    break
+                else:
+                    text_return += line.body + "\n"
+                    continue
+
+    return text_return
 
 def locateLibrary(justGet=False):
     #addon = bpy.context.preferences.addons.get('snippetsLibrary')

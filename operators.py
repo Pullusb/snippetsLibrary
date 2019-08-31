@@ -93,7 +93,7 @@ class SNIPPETSLIB_PT_uiList(Panel):
         col = row.column(align=True)
         ## possible icon for insert : #LIBRARY_DATA_DIRECT RIGHTARROW LIBRARY_DATA_DIRECT NODE_INSERT_OFF
         col.operator("sniptool.template_insert", icon="PASTEDOWN", text="").standalone = False
-        col.operator("sniptool.template_insert", icon="DUPLICATE", text="").standalone = True#TEXT
+        col.operator("sniptool.template_insert", icon="FILE_NEW", text="").standalone = True#TEXT DUPLICATE
         col.separator()
         col.operator("sniptool.reload_list", icon="FILE_REFRESH", text="")
         col.operator("sniptool.search_content", icon="ZOOM_ALL", text="")
@@ -339,7 +339,10 @@ class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
 class SNIPPETSLIB_OT_searchItems(bpy.types.Operator):
     bl_idname = "sniptool.search_content"
     bl_label = "Search inside snippets"
-    bl_description = "Like reload but listing only matching snippets.\nSearch in content and title.\n(can be slow if a there is a lot of snippets or slow time access to disk/server)"
+    bl_description = "Like reload but listing only matching snippets.\n\
+        Search in content and title.\n\
+        (can be slow if a there is a lot of snippets or slow time access to disk/server)\n\
+        You can select text (one line only) before launching to use it as search term"
     # bl_options = {'REGISTER', 'INTERNAL'}
 
     case_sensitive : bpy.props.BoolProperty(
@@ -437,6 +440,12 @@ class SNIPPETSLIB_OT_searchItems(bpy.types.Operator):
         return{'FINISHED'}
 
     def invoke(self, context, event):
+        text = getattr(bpy.context.space_data, "text", None)
+        if text:
+            selection = get_selected_text(self, text, one_line=True)
+            if selection:
+                bpy.context.scene.sniptool_search = selection
+            
         return context.window_manager.invoke_props_dialog(self)
 
     def draw(self, context):
