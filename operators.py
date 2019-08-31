@@ -17,8 +17,6 @@ class SNIPPETSLIB_OT_actions(bpy.types.Operator):
         items=(
             ('UP', "Up", ""),
             ('DOWN', "Down", ""),
-            # ('REMOVE', "Remove", ""),
-            # ('ADD', "Add", ""),
         )
     )
 
