@@ -1,0 +1,1 @@
+[o for o in ${1:bpy.context.selected_objects} if o.type='${2:MESH}']${0}

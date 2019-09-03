@@ -22,11 +22,11 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 2, 1),
+    "version": (0, 2, 2),
     "blender": (2, 80, 0),
-    "location": "Text editor > toolbar",
+    "location": "Text editor > toolbar (ctrl+T) > Dev tab",
     "warning": "",
-    "wiki_url": "",
+    "wiki_url": "https://github.com/Pullusb/snippetsLibrary",
     "category": "Text Editor" }
 
 
@@ -41,6 +41,7 @@ from . import developer_utils
 #from . import func
 #from . import operators
 from .operators import *
+from .converter import *
 from .func import *
 
 importlib.reload(developer_utils)
@@ -90,10 +91,17 @@ class snippetsPreferences(bpy.types.AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
-        layout.use_property_split = True
+        # layout.use_property_split = True
+        
         # flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         # layout = flow.column()
-        
+
+        ### layout.label(text="infos:")
+        # layout.label(text="Snippets will be saved as invidual files")
+        # layout.label(text="in a folder named 'snippets' (created at first use)")
+        # layout.label(text="located aside the addon file (unless you enter a custom path)")
+        # layout.separator()
+
         layout.prop(self, "snippets_custom_path")
         if self.snippets_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
@@ -112,12 +120,16 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "snippets_show_line_highlight")     
 
         layout.separator()
-        # layout.label(text="infos:")
-        layout.label(text="Snippets will be saved as invidual files")
-        layout.label(text="in a folder named 'snippets' (created at first use)")
-        layout.label(text="located aside the addon file (unless you enter a custom path)")
-        
+        layout.label(text="Convert the library to external editor format:")
+        layout.label(text="Sublime Text, VScode, Atom")
 
+        row=layout.row(align=True)
+        row.operator('sniptool.convert', text='All').convertid = 0
+        row.operator('sniptool.convert', text='Sublime').convertid = 1
+        row.operator('sniptool.convert', text='VScode').convertid = 2
+        row.operator('sniptool.convert', text='Atom').convertid = 3
+        row=layout.row()
+        row.label
 
 # register
 ##################################
@@ -133,6 +145,7 @@ SNIPPETSLIB_UL_items,
 SNIPPETSLIB_PT_uiList,
 SNIPPETSLIB_OT_deleteSnippet,
 SNIPPETSLIB_OT_searchItems,
+SNIPPETSLIB_OT_convert,
 snippetsPreferences,
 )
 

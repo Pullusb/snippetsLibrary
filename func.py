@@ -31,21 +31,25 @@ def update_func(self, context):
         if not content:
             print('problem while getting content of:', fp)
         
-        # get first lines of the text for to feed preview
+        # get rid of tabstops and show only placeholder:
+        content = re.sub(r'\${\d{1,2}:?(.*?)}', r'\1', content)
+
+        # get first lines of the text to feed preview
         lines = []
         truncated = False
 
         defs = None
         # with open(fp, 'r') as fd:
             # for i, l in enumerate(fd.readlines()):
-        for i, l in enumerate(content.splitlines(True)):
+        splitcontent = content.splitlines(True)
+        for i, l in enumerate(splitcontent):
             if i > preview_linum:#limit of line to preview
                 truncated = True
                 break
             lines.append(l)
     
         preview = ''.join(lines)
-        if truncated: preview += '. . .'
+        if truncated: preview += '. . . +{} lines . . .'.format(len(splitcontent)-preview_linum)
 
         defs = scan_definitions(content)
         deflist = ''

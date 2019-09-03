@@ -2,14 +2,14 @@ import bpy
 import os
 from os.path import splitext, basename, join
 import time
-from bpy.types import Panel, UIList
+from bpy.types import Panel, UIList, Operator
 from bpy.props import IntProperty, CollectionProperty #, StringProperty
 
 from .func import *
 ###--- UI List items
 
 # ui list item actions
-class SNIPPETSLIB_OT_actions(bpy.types.Operator):
+class SNIPPETSLIB_OT_actions(Operator):
     bl_idname = "sniptool.list_action"
     bl_label = "List Action"
 
@@ -137,7 +137,7 @@ class SNIPPETSLIB_PT_uiList(Panel):
 # OPS
 # -------------------------------------------------------------------
 
-class SNIPPETSLIB_OT_deleteSnippet(bpy.types.Operator):
+class SNIPPETSLIB_OT_deleteSnippet(Operator):
     """Delete selected snippet (show a confirmation popup)"""
     bl_idname = "sniptool.delete_confirm_dialog"
     bl_label = "Delete snippet"
@@ -175,7 +175,7 @@ class SNIPPETSLIB_OT_deleteSnippet(bpy.types.Operator):
         layout.label(text='This operation delete the snippet file (cant be undone)')
         
 
-class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
+class SNIPPETSLIB_OT_saveSnippet(Operator):
     bl_idname = "sniptool.save_snippet"
     bl_label = "Save snippet"
     bl_description = "Save text selection to a new snippet\nPopup a field to name the new snippet"
@@ -220,7 +220,7 @@ class SNIPPETSLIB_OT_saveSnippet(bpy.types.Operator):
 
 
 # insert button
-class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
+class SNIPPETSLIB_OT_insertTemplate(Operator):
     bl_idname = "sniptool.template_insert"
     bl_label = "Insert snippet"
     bl_description = "Insert selected snippet at cursor location"
@@ -272,6 +272,11 @@ class SNIPPETSLIB_OT_insertTemplate(bpy.types.Operator):
 
                         FormattedText = '\n'.join(indentedLines)
 
+                # if future tabstop implementation : put re.search here to get index position of stops
+
+                if '$' in FormattedText:#extra precautions...not really needed.
+                    # replace tabstop with placeholder (or delete if not)
+                    FormattedText = re.sub(r'\${\d{1,2}:?(.*?)}', r'\1', FormattedText)
                 # print(FormattedText)
                 insert_template(override, FormattedText)
 
@@ -319,7 +324,7 @@ def reload_snippets():
 
 
 # relaod button
-class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
+class SNIPPETSLIB_OT_reloadItems(Operator):
     bl_idname = "sniptool.reload_list"
     bl_label = "Reload List"
     bl_description = "Reload snippets list from disk"
@@ -336,7 +341,7 @@ class SNIPPETSLIB_OT_reloadItems(bpy.types.Operator):
 
 
 # search inside the content, "reload" the list with only compatible snippets
-class SNIPPETSLIB_OT_searchItems(bpy.types.Operator):
+class SNIPPETSLIB_OT_searchItems(Operator):
     bl_idname = "sniptool.search_content"
     bl_label = "Search inside snippets"
     bl_description = "Like reload but listing only matching snippets.\n\
@@ -458,7 +463,7 @@ class SNIPPETSLIB_OT_searchItems(bpy.types.Operator):
         layout.prop(bpy.context.scene, "sniptool_search", text="Find")
 
 
-class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):
+class SNIPPETSLIB_OT_OpenSnippetsFolder(Operator):
     bl_idname = "sniptool.open_snippet_folder"
     bl_label = "Open library folder"
     bl_description = "Open snippets folder location"
@@ -479,3 +484,160 @@ class SNIPPETSLIB_OT_OpenSnippetsFolder(bpy.types.Operator):
 class SNIPPETSLIB_sniptoolProp(bpy.types.PropertyGroup):
     '''name = StringProperty() '''
     id : IntProperty(update=update_func)
+
+
+### Insertion is going Modal ! Yaay !
+### TRY implement TABSTOP, difficult... not there yet (moving the cursor around is such a pain...)
+
+"""
+class SNIPPETSLIB_OT_insertTemplate(Operator):
+    bl_idname = "sniptool.template_insert"
+    bl_label = "Insert snippet"
+    bl_description = "Insert selected snippet at cursor location"
+    bl_options = {'REGISTER', 'INTERNAL'}
+
+    standalone : bpy.props.BoolProperty(default=False)
+
+    def modal(self, context, event):
+        if event.type in {'ESC', 'ENTER' 'LEFT_ARROW', 'DOWN_ARROW', 'RIGHT_ARROW', 'UP_ARROW', 'RIGHTMOUSE', 'LEFTMOUSE'}:
+            # the moment there is a 'move' the modal ends
+            return {'FINISHED'}
+        
+        elif event.type == 'TAB':
+            if event.value == 'RELEASE':
+                # go to next tabstop
+                self.tabcount += 1
+
+        # return {'CANCELLED'}
+
+
+        # print('event', event.type)
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        scn = context.scene
+        if locateLibrary():
+            snip = scn.sniptool[scn.sniptool_index].name
+            text = getattr(bpy.context.space_data, "text", None)
+            if not text or self.standalone:
+                pref = get_addon_prefs()
+                #create new text-block if not any
+                text = bpy.data.texts.new(snip)# get the name of the snippets if no text datablock
+                context.space_data.text = text
+                ### Since it's code Toggling ON some coding space data basic feature #maybe add in pref to choose basic behavior (in devtool todo too)
+                context.space_data.show_line_numbers = pref.snippets_show_line_numbers
+                context.space_data.show_word_wrap = pref.snippets_show_word_wrap
+                context.space_data.show_syntax_highlight = pref.snippets_show_syntax_highlight
+                context.space_data.show_line_highlight = pref.snippets_show_line_highlight
+
+            #context override for the ops.text.insert() function
+            override = {'window': context.window,
+                        'area'  : context.area,
+                        'region': context.region,
+                        'space': context.space_data,
+                        'edit_text' : text
+                        }
+
+            Loaded_text = load_text(get_snippet(snip))
+            #get character position in text
+            charPos = text.current_character
+            #print ('charPos', charPos)
+
+            #indentedText = Loaded_text
+            if Loaded_text:
+                FormattedText = Loaded_text
+                #indent text lines exept first (already at cursor position)
+                if charPos > 0:
+                    textLines = Loaded_text.split('\n')
+                    if not len(textLines) == 1:
+                        #print("indent subsequent lines")
+                        indentedLines = []
+                        indentedLines.append(textLines[0])
+                        for line in textLines[1:]:
+                            indentedLines.append(' '*charPos + line)
+
+                        FormattedText = '\n'.join(indentedLines)
+
+                # if future tabstop implementation : put re.search here to get index position of stops
+                tabstops = False
+                if '${' in FormattedText:# TABSTOPS, avoid regexing if no $ found
+                    tabstops = True
+                    # self.stoptext = FormattedText
+                    matches = re.finditer(r'\${(\d{1,2}):?(.*?)}', FormattedText)
+
+                    if matches:
+                        FormattedText = re.sub(r'\${\d{1,2}:?(.*?)}', r'\1', FormattedText)
+                    else:
+                        print('TABSTOPS !')
+                        tabstops = False
+                        
+                    # replace tabstop with placeholder (or delete if not)
+                # print(FormattedText)
+                insert_template(override, FormattedText)
+                #lauch modal with text infos
+            else:
+                print('Fail to load snippet !')
+        else:
+            pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
+            self.report({'ERROR'}, pathErrorMsg)
+            return {'CANCELLED'}
+
+        ## ----
+        if tabstops:
+            #Once the snippets is inserted, Gather info in self-variables and go tabstopping
+            self.lentotal = len(FormattedText)
+            self.tabnum = FormattedText.count('    ')
+            print('self.tabnum: ', self.tabnum)
+            self.stops = []
+            self.tabcount = 0
+            self.select = True
+            
+            total_extra = 0
+            for m in matches:
+                print('start of group 0:',m.start(0))
+                #m.group(1) = number (id), m.group(2) = placeholder
+                extra =  m.end(0) - m.start(0) - len( m.group(2) )
+                self.stops.append(
+                    {'pos' : m.start(0) - total_extra,#position less all tag cahracter
+                    'id' : int(m.group(1)),
+                    'chars' : len( m.group(2) ),
+                    'extra' : extra,
+                    })
+
+                total_extra += extra #add after append.
+
+                #eventually sort by id but will be difficult to go reverse...
+
+            #roll back to beggining
+            print('self.lentotal: ', self.lentotal)
+
+            self.totalmove = self.lentotal - self.tabnum * 3
+            for i in range(self.totalmove):
+                bpy.ops.text.move(type='PREVIOUS_CHARACTER')
+            
+            print('line:', text.current_character,', char:', text.current_line_index)
+            #go to first tabstop
+
+            move_to_stop = self.stops[0]['pos']
+            print('move_to_stop: ', move_to_stop)
+            for i in range(move_to_stop):
+                bpy.ops.text.move(type='NEXT_CHARACTER')
+
+            print('line:', text.current_character,', char:', text.current_line_index)
+
+            print('Done !')
+            return {'FINISHED'}
+            context.window_manager.modal_handler_add(self)
+            return {'RUNNING_MODAL'}
+            
+            ''' # standalone filter
+            #may be if its use as standalone bypass the tabstopping... why not ??! 
+            if self.standalone:
+
+            else:
+                self.report({'INFO'}, "New text file created")
+                return {'FINISHED'}
+            '''
+
+        return {'FINISHED'}
+"""
