@@ -53,13 +53,16 @@ class SNIPPETSLIB_OT_actions(Operator):
 class SNIPPETSLIB_UL_items(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
-        self.use_filter_show = True
+        self.use_filter_show = True#force open the search feature
+        layout.label(text=item.name, icon='WORDWRAP_ON')#label instead of prop disable renamimg feature (good)
+        # layout.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
+
+        #Other tests
         #split = layout.split(0.3)
         ##add to draw index (useless)
         #split.label("%d" % (index))
         #split.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
         ##delete icon to remove sheets icons (also useless)
-        layout.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
 
     def invoke(self, context, event):
         pass
@@ -79,16 +82,11 @@ class SNIPPETSLIB_PT_uiList(Panel):
         layout = self.layout
         scn = bpy.context.scene
 
-        rows = 2
         row = layout.row()
 
-        """ # refresh and insert above list
-        row.operator("sniptool.reload_list", icon="FILE_REFRESH")
-        row = layout.row()
-        row.operator("sniptool.template_insert", icon="FORWARD")
-        row = layout.row() """
-
-        row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=rows)
+        minimum_rows = 9
+        row.template_list("SNIPPETSLIB_UL_items", "", scn, "sniptool", scn, "sniptool_index", rows=minimum_rows)
+        #https://docs.blender.org/api/blender2.8/bpy.types.UILayout.html#bpy.types.UILayout.template_list
 
         col = row.column(align=True)
         ## possible icon for insert : #LIBRARY_DATA_DIRECT RIGHTARROW LIBRARY_DATA_DIRECT NODE_INSERT_OFF
@@ -105,23 +103,14 @@ class SNIPPETSLIB_PT_uiList(Panel):
         col.operator("sniptool.delete_confirm_dialog", icon="REMOVE", text="")
         col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER",  text="")
 
-        """ # add menu under ui list
-        row = layout.row()
-        col = row.column(align=True)
-        col.separator()
-        col.prop(context.scene, 'new_snippets_name', text='snippets name')
-        col.operator("sniptool.save_snippet", icon="PLUS")#SAVE_COPY COPYDOWN
-        col.operator("sniptool.open_snippet_folder", icon="FILE_FOLDER") """
-
-        # Preview zone
-        box = layout.box()
-        row = box.column()
         prev_icon = 'HIDE_OFF' if bpy.context.scene.sniptool_preview_use else 'HIDE_ON'
-        row.prop(scn, 'sniptool_preview_use', text='Preview', icon=prev_icon)#FILE_TEXT
+        col.prop(scn, 'sniptool_preview_use', text="", icon=prev_icon)
+        # Preview zone
+        # row.prop(scn, 'sniptool_preview_use', text='Preview', icon=prev_icon)#fat button with preview
         if bpy.context.scene.sniptool_preview_use:
             if bpy.context.scene.sniptool_preview:
-                # box.prop(scn, 'sniptool_preview', text='')# '\n' not recognised, split in multiple labels
-                # box = layout.box()
+                box = layout.box()
+                row = box.column()
                 for l in bpy.context.scene.sniptool_preview.split('\n'):
                     row.label(text=l)
             
@@ -223,7 +212,7 @@ class SNIPPETSLIB_OT_saveSnippet(Operator):
 class SNIPPETSLIB_OT_insertTemplate(Operator):
     bl_idname = "sniptool.template_insert"
     bl_label = "Insert snippet"
-    bl_description = "Insert selected snippet at cursor location"
+    bl_description = "Insert selected snippet at cursor location or in a new text block"
     bl_options = {'REGISTER', 'INTERNAL'}
 
     standalone : bpy.props.BoolProperty(default=False)
@@ -493,7 +482,7 @@ class SNIPPETSLIB_sniptoolProp(bpy.types.PropertyGroup):
 class SNIPPETSLIB_OT_insertTemplate(Operator):
     bl_idname = "sniptool.template_insert"
     bl_label = "Insert snippet"
-    bl_description = "Insert selected snippet at cursor location"
+    bl_description = "Insert selected snippet at cursor location or in a new text block"
     bl_options = {'REGISTER', 'INTERNAL'}
 
     standalone : bpy.props.BoolProperty(default=False)

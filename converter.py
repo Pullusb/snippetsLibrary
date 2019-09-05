@@ -28,6 +28,10 @@ def get_snippet_infos(fp):
     prefix = split('_')[0]
     if prefix:
         trigger = 's'+prefix #this does sbpy sregex sdef spy etc...
+    else:
+        #fallback to containing folder name intead of bsnip
+        trigger = 's'+basename(dirname(fp))
+
     # print('trigger: ', trigger)
     return snipname, text, description, trigger
 

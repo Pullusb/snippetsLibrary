@@ -76,7 +76,26 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 ---
 
+## Todo:
+- Clean text-get: Change the methods of getting selection so it doesn't mess with user clipboard under the hood
+- Add overwrite alert : Confirmation/options popup when creating snippets with the same name as an already existing one (actions : overwrite/ re-name/ just popup Error)
+
+### Ideas considered :
+- Precise open : Make the open folder operator open the folder of the selected snippets ()
+- Convert auto-description : On conversion to external editors format, use the top comment of the snippets if any (isntead of the snippet name.)
+- Edit selected: Add an edit button that open the snippet from disk so it can be edited quickly
+- TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
+- Double click to insert (just dont know how to do that with UIlist)
+
+---
+
 ## Changelog:
+  v0.2.3 2019-09-05:
+  - Converting a snippets without prefix now use containing folder name as trigger keyword. (instead of "bsnip") _thinking about making it the default in the future..._
+  - UI fix : The list as now a default minimum size that match the right icons space.
+  - UI fix : List item are no longer renamable with double click does nothing, this avoid bad UX and losing track of the snippets file
+  - UI new : Preview toggle button is now part of the right side buttons.
+
   v0.2.2 2019-09-02:
   - New feature : In user preferences, added buttons to convert all snippets to sublime-text/vscode/atom compatible format
   - Added possibility to add tabstop syntax to the snippets (e.g: `${1}`or `${2:placeholder}`)
