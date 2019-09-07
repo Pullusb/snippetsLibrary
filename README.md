@@ -39,10 +39,13 @@ if you have some text selected in the editor the searchfield will be pre-filled 
 **Arrows up/down** : Just change current snippet.
 
 **Add** : Create a new snippet to the library from current text selection (pop up a windows)
-Thought it's not mandatory, it is better to add a prefix (e.g: `obj_`) to the name. Try to keep it a very short word that represent a related category, think of it as a tag.
+at the moment of save the snippet format can be changed from .txt (default) to .py format. The default format can be changed in the addon preference.
+It's completely up to you. Preferably use '.py' when the code can run as a standalone script
+<!-- Thought it's not mandatory, it is better to add a prefix (e.g: `obj_`) to the name. Try to keep it a very short word that represent a related category, think of it as a tag.
 When it's very generic I just use `bpy_` to tell it's related to blender python.
 This prefix serve not only to sort snippets (alphabetically) by category, but it's necessary when using the snippets conversion (covered later in this doc)
-Also preferably use '-' rather than spaces in snippet's name.
+Also preferably use '-' rather than spaces in snippet's name.-->
+
 
 **Delete** : This will delete the selected snippet file (pop up a confirmation windows). This action is irreversible since the snippets text file is deleted from disk.
 
@@ -60,12 +63,11 @@ For example, this prove's usefull when multiple user work on a same server to sh
 
 **text editor properties** : Choose wich editor option to toggle on when a new textblock is automatically created 
 
-**Conversion** (this feature is not thoroughly tested) : Enjoy your blender made snippets on your favorite IDE !
+**Conversion** : Enjoy your blender made snippets on your favorite IDE !
 This buttons allow you to convert all your library to the format of external editors Sublime text, VScode or atom.
-The conversion use the prefix (with an '`s`' before) of the snippet's name as a tab-trigger keyword. This is meant to avoid having triggers with standard words
-example: for a snippet prefxes `bpy_`, in sublime text you would start tapping `sbpy` to see suggestions of all related snippets.
-Note for Atom users: Since multiple snippets can share the same prefix the conversion use [this hack to make it work](https://github.com/medienbaecker/kirby-snippets/issues/1#issue-172641340).
-
+The trigger word to call it will be the name of the snippet's containing folder with an heading '`s`' added. (This is meant to avoid having triggers with standard words)
+example: if the snippets was in the folder `bpy`, in sublime text you would start tapping `sbpy` to see suggestions of all related snippets.
+Note for Atom users: Since multiple snippets can share the same prefix, the conversion use [this hack to make it work](https://github.com/medienbaecker/kirby-snippets/issues/1#issue-172641340).
 
 Note : You can enter tabstop syntax in your snippets. This will not affect your use of it in blender.
 It can be usefull after conversion on external editors (see Conversion above)
@@ -76,25 +78,47 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 ---
 
+
 ## Todo:
-- Clean text-get: Change the methods of getting selection so it doesn't mess with user clipboard under the hood
-- Add overwrite alert : Confirmation/options popup when creating snippets with the same name as an already existing one (actions : overwrite/ re-name/ just popup Error)
+- add all scene properties in a property group
 
 ### Ideas considered :
-- Precise open : Make the open folder operator open the folder of the selected snippets ()
-- Convert auto-description : On conversion to external editors format, use the top comment of the snippets if any (isntead of the snippet name.)
+- Maybe in the future consider putting all the built-in snippets as .py format and stop wondering if it should be txt or py...
+- adding bookmark of search tag (editable) this can replace the prefix for a quick search (but will way more disck access )
+- Precise open : Make the open folder operator open the folder of the selected snippets
 - Edit selected: Add an edit button that open the snippet from disk so it can be edited quickly
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
-- Double click to insert (just dont know how to do that with UIlist)
+- quick insert : Double click to insert (just dont know how to do that with UIlist without an ugly modal on each clic)
+- Convert and send : adding path to the addon pref so the user so converted snippets goes immetdiately in IDE folder (overwritting old conversion)
+- multi-source : adding support for multiple source folder and source change in user preferences...
+- online lib : (need multi-source) make some sort of repo where every user can pull-push snippets...(difficult)
 
 ---
 
 ## Changelog:
+
+  v0.3.0 2019-09-07:
+  - Library Clean : All shipped personnal snippets have been corrected to work in 2.8 (mentionned otherwise in the header for a few). Filenames are now with spaces and without prefix
+  - Changed shipped snippets folder organisation.
+  - UX change : The library use now plain filename without prefix. For IDE conversion it uses now the containing folder name as trigger.
+  - New conversion feature : Convert auto-description, during conversion to external editors format, use the top comment (if any) of the snippets as description (else use the snippet name.)
+  - Add overwrite alert : Confirmation/options popup when creating snippets with the same name as an already existing one
+  - Clean text-get: Change the methods of getting selection so it doesn't mess with user clipboard.
+  - Clean save : Saving a new snippet has now a lot of error/sanity check with help messages in case of obvious problems.
+  - New addon pref : You can choose if you want snippets to be saved as .txt file or .py by default.
+  This choice is also shown at the moment of saving (if an extension is manually added it will override the settings)
+  _considering .py format for all snippets in the future..._
+
   v0.2.3 2019-09-05:
-  - Converting a snippets without prefix now use containing folder name as trigger keyword. (instead of "bsnip") _thinking about making it the default in the future..._
+  - Converting a snippets without prefix now use containing folder name as trigger keyword. (instead of "bsnip")
+  _thinking about making it the default in the future..._
   - UI fix : The list as now a default minimum size that match the right icons space.
   - UI fix : List item are no longer renamable with double click does nothing, this avoid bad UX and losing track of the snippets file
   - UI new : Preview toggle button is now part of the right side buttons.
+  <!--The conversion use the prefix of the snippet's name as a tab-trigger keyword. It add an heading '`s`' This is meant to avoid having triggers with standard words
+  If some of your snippets don't have prefixes the name of the containing folder (with an '`s`' before) will be use as tab-trig.
+  example: for a snippet prefxes `bpy_`, in sublime text you would start tapping `sbpy` to see suggestions of all related snippets.
+  -->
 
   v0.2.2 2019-09-02:
   - New feature : In user preferences, added buttons to convert all snippets to sublime-text/vscode/atom compatible format

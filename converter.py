@@ -6,33 +6,58 @@ from .func import *
 
 def get_snippet_infos(fp):
     f = basename(fp)
-    # text and title
-    snipname = f if not '.' in f else splitext(f)[0]
-    # print('snipname: ', snipname)
 
     with open(fp, 'r') as fd:
         text = fd.read()
 
+    if not text:
+        print('no text to read in:', fp)
+        return
+    
+    #name for the file ()
+    snipname = f if not '.' in f else splitext(f)[0]
+    snipname = snipname.replace('-', ' ').replace('_', ' ').strip()#no need if file is already formated but can't be too carefull
+
     # description
-    #use name without prefix for the description (not meant to be used a filename)
-    description = snipname.split('_')[1] if '_' in snipname else snipname
+    #use name without prefix for the description (not meant to be used as filename)
+    description = snipname.split('_', 1)[1] if '_' in snipname else snipname
     description = description.replace('-', " ")
-    # print('description: ', description)
 
+    # Use first line of the snippet as description (if not separator/encoding info/licence line)
+    header = text.split('\n')[0]
+    if header.startswith('#'):
+        if not '#####' in header:#consider five hash as separator
+            header = header.strip('# ').strip()#slice off useless surrounding '#' and ' ' and '\n'
+            if header:#avoid empty string.
+                #avoid encoding declaration and need to have some text letters (still avoid separator cases)
+                if not re.search(r'coding.*utf-?8', header) and re.search(r'[a-zA-Z]', header):#re.match(r'(?: -*- )?coding\s?:\s?utf'):
+                    description = header
 
-    # trigger
-    # for the trigger une bnip by defaut so it can pop a list 
-    # use prefix or folder name to use as trigger (if not bpy ?)
+    # Trigger
+    # Use prefix or containing folder name to use as trigger
+    # Alternatively use 'snip' for non categorized snippets.
 
-    trigger = 'bsnip'
-    prefix = split('_')[0]
-    if prefix:
-        trigger = 's'+prefix #this does sbpy sregex sdef spy etc...
+    if '_' in f:
+        #if there is an underscore use prefix
+        prefix = f.split('_')[0]
+    else:
+        #no undescore, use containing folder
+        prefix = basename(dirname(fp))
+        if prefix.lower() == 'snippets':
+            prefix = 'snip'
+
+    if not prefix:
+        print('Error,')
+        return
+    
+    trigger = 's'+prefix
+    #for exemple  sbpy sregex srig sops spy ssnip etc.
+    """ if prefix:
+        trigger = 's'+prefix
     else:
         #fallback to containing folder name intead of bsnip
-        trigger = 's'+basename(dirname(fp))
+        trigger = 's'+basename(dirname(fp)) """
 
-    # print('trigger: ', trigger)
     return snipname, text, description, trigger
 
 # SUBLIME TEXT ---
@@ -48,6 +73,8 @@ def convert_to_sublime_snip(snippet_list, dest):
 
     for s in snippet_list:
         snipname, text, description, trigger = get_snippet_infos(s)
+        #just for sublime that us one file per snippet with calling name : dash instead of space in filename
+        snipname = snipname.replace(' ', '-')
         # escape $ character in text
         sublimetext = text.rstrip('\n')#.replace(r'$', r'\$')
         sublimetext = simple_dollar.sub('\\$', sublimetext)
@@ -60,7 +87,6 @@ def convert_to_sublime_snip(snippet_list, dest):
     <description>{2}</description>
     <scope>source.python</scope>
 </snippet>'''.format(sublimetext, trigger, description)
-
 
         sublimefile = join(sublimedir, sublimefile)
         with open(sublimefile, 'w') as fd: fd.write(sublimesnip)
@@ -97,14 +123,14 @@ def convert_to_vscode_snip(snippet_list, dest):
         # print(type(vscodetext), 'vscodetext: ', vscodetext)
 
         vscodesnip = '''
-"{2}": {{
+"{3}": {{
 "prefix": "{1}",
 "body": [
 {0}
 ],
 "description": "{2}"
 }}
-'''.format(vscodetext, trigger, description)
+'''.format(vscodetext, trigger, description, snipname)
 
         fd.write(vscodesnip)
 
@@ -156,7 +182,7 @@ def convert_to_atom_snip(snippet_list, dest):
   {0}
   """
 
-'''.format(atomtext, trigger+spacenum*' ', description)#use the space hack...
+'''.format(atomtext, trigger+spacenum*' ', snipname)#use the space hack..., no description
 
         #get one more indent on the whole snip to be under source.python above. but removing last 
         atomsnip = '  ' +  atomsnip.replace('\n', '\n  ').rstrip(' ') 
@@ -189,7 +215,7 @@ class SNIPPETSLIB_OT_convert(bpy.types.Operator):
                     if f.endswith('.txt') or f.endswith('.py'):
                         snippet_list.append(join(root, f))
             
-            dest = join(dirname(library), 'converted_snippets')#up one folder from lib then convert folder...
+            dest = join(dirname(dirname(library)), 'converted_snippets')#up one folder from lib then convert folder...
             if not exists(dest):
                 os.mkdir(dest)
 
@@ -201,7 +227,8 @@ class SNIPPETSLIB_OT_convert(bpy.types.Operator):
                 convert_to_atom_snip(snippet_list, dest)
 
             openFolder(dest)
-
+            info = f'Finished conversion of {len(snippet_list)} snippets'
+            self.report({'INFO'}, info)
         else:
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)

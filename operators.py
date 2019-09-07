@@ -1,5 +1,6 @@
 import bpy
 import os
+import re
 from os.path import splitext, basename, join
 import time
 from bpy.types import Panel, UIList, Operator
@@ -73,10 +74,8 @@ class SNIPPETSLIB_PT_uiList(Panel):
     bl_idname = 'SNIPPETSLIB_PT_ui_panel'
     bl_space_type = "TEXT_EDITOR"
     bl_region_type = "UI"
-    bl_category = "Dev"
+    bl_category = "Snippets"#Dev
     bl_label = "Snippets List"
-
-    # bpy.types.Scene.new_snippets_name = bpy.props.StringProperty(description='name that snippets will take, name will be generated')
     
     def draw(self, context):
         layout = self.layout
@@ -172,40 +171,81 @@ class SNIPPETSLIB_OT_saveSnippet(Operator):
     
     newsnip: bpy.props.StringProperty()
 
-
     def execute(self, context):
+        # pref = get_addon_prefs()
         scn = context.scene
-        library = locateLibrary()
-        if library:
-            snipname = clipit(context, self.newsnip)
-            if snipname:
-                item = scn.sniptool.add()
-                item.id = len(scn.sniptool)
+        name = self.newsnip.strip()
+        # name = name.replace(' ', '-')#even if i hate spaces.
+        # not sure if that is necessary...better keep human readable name
 
-                item.name = splitext(snipname)[0]
-
-                scn.sniptool_index = (len(scn.sniptool)-1)
-                info = '%s added to list' % (item.name)
-                self.report({'INFO'}, info)
-            else:
-                self.report({'warning'}, 'nothing selected')
-
-            ###print all snipsauce :
-            #for i in scn.sniptool:
-            #    print (i.name, i.id)
+        # do some check on the name
+        if name:
+            if not re.search(r'\..{2-4}$', name):#check for an existing extension
+                #if no extension provided by the user use default
+                snipname = name + '.py' if self.pref.snippets_save_as_py else name + '.txt'
+            
+            # check here if snippets already exists
+            filelist = []
+            for root, dirs, files in os.walk(self.library, topdown=True):
+                for f in files:
+                    if f.endswith('.txt') or f.endswith('.py'):
+                        filelist.append(os.path.splitext(f)[0])
+            
+            if name in filelist:
+                error = f'Snippet "{name}" already exists in library'
+                self.report({'ERROR'}, error)
+                return{'CANCELLED'}
 
         else:
-            pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
-            self.report({'ERROR'}, pathErrorMsg)
+            #return error or use a placeholder (can be usefull for fast saving when hasty)
+            snipname = generate_unique_snippet_name()
+            print('no name specified, using generated placeholder:', snipname)
+            # self.report({'ERROR'}, 'No Name.\nYou need to specify a naame for your snippet')
+            # return{'CANCELLED'}
+
+        ## if arriverd here, all good
+        # save the file on disk
+        save_template(self.library, snipname, self.selection)
+        # add it to UI list
+        item = scn.sniptool.add()
+        item.id = len(scn.sniptool)
+
+        item.name = splitext(snipname)[0]#Same format as when reloading
+
+        scn.sniptool_index = (len(scn.sniptool)-1)
+        info = '%s added' % (item.name)
+        self.report({'INFO'}, info)
+
         return{'FINISHED'}
     
     def invoke(self, context, event):
+        scn = context.scene
+        self.pref = get_addon_prefs()
+        # sanity/error checks
+        self.library = locateLibrary()
+        if not self.library:
+            pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
+            self.report({'ERROR'}, pathErrorMsg)
+            return{'CANCELLED'}
+
+
+        text = getattr(bpy.context.space_data, "text", None)
+        if not text:
+            self.report({'ERROR'}, 'No text file.\nYou need to have a text in the editor with something selected')
+            return{'CANCELLED'}
+        
+        self.selection = selection_to_snippet(self, text)#dedented get_selected_text
+        if not self.selection:
+            self.report({'ERROR'}, 'Nothing selected.\nYou need to select the text to be saved as snippet')
+            return{'CANCELLED'}
+
         return context.window_manager.invoke_props_dialog(self)
 
     def draw(self, context):
         layout = self.layout
         layout.label(text='Chose a name for this snippet')
         layout.prop(self, "newsnip", text="Name")
+        layout.prop(self.pref, "snippets_save_as_py", text="Save as .py")
 
 
 # insert button
@@ -220,10 +260,10 @@ class SNIPPETSLIB_OT_insertTemplate(Operator):
     def execute(self, context):
         scn = context.scene
         if locateLibrary():
+            pref = get_addon_prefs()
             snip = scn.sniptool[scn.sniptool_index].name
             text = getattr(bpy.context.space_data, "text", None)
             if not text or self.standalone:
-                pref = get_addon_prefs()
                 #create new text-block if not any
                 text = bpy.data.texts.new(snip)# get the name of the snippets if no text datablock
                 context.space_data.text = text

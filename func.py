@@ -254,6 +254,20 @@ def get_snippet(name):
     else:
         return(1)
 
+def generate_unique_snippet_name():
+    from random import randrange
+    import time
+    return 'snip_'+ str(randrange(999)) + time.strftime("_%Y-%m-%d_%H-%M-%S") +'.txt'
+
+def selection_to_snippet(self, text):
+    """Get selection, dedent it"""
+    clip = get_selected_text(self, text)
+    if clip:
+        clip = textwrap.dedent(clip)
+        return clip
+    
+
+"""
 def clipit(context, name):
     library = locateLibrary()
     bpy.ops.text.copy()
@@ -269,11 +283,10 @@ def clipit(context, name):
                 snipname = name + '.txt'
         else:#generate Unique snipName
             print('no name specified, generating a placeholder')
-            from random import randrange
-            import time
-            snipname = 'snip'+ str(randrange(999)) + time.strftime("_%Y-%m-%d_%H-%M-%S") +'.txt'
+            snipname = generate_unique_snippet_name()
 
         save_template(library, snipname, clip)
         return (snipname)
     else:
         return (0)
+"""

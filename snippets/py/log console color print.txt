@@ -1,0 +1,24 @@
+# color print in console (unix)
+def _log(color, *args):
+    msg = ""#log prefix
+    for arg in args:
+        if msg:
+            msg += ", "
+        msg += str(arg)
+    print(color + msg + '\033[0m')
+
+def log_blue(*args):
+    _log('\033[34m', *args)#blue
+
+
+def log_red(*args):
+    _log('\033[31m', *args)#red
+
+
+def log_green(*args):
+    #_log('\033[1;32m', "")#jump a line
+    _log('\033[1;32m', *args)#green
+
+
+def log_gold(*args):
+    _log('\033[33m', *args)#gold

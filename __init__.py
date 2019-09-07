@@ -22,9 +22,9 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 2, 3),
+    "version": (0, 3, 0),
     "blender": (2, 80, 0),
-    "location": "Text editor > toolbar (ctrl+T) > Dev tab",
+    "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
     "wiki_url": "https://github.com/Pullusb/snippetsLibrary",
     "category": "Text Editor" }
@@ -84,9 +84,15 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         name='Show syntax highlight',
         description="activate syntax highlight by defaut",
         default=True)
+
     snippets_show_line_highlight : bpy.props.BoolProperty(
         name='Show line highlight',
         description="activate line highlight by defaut",
+        default=False)
+
+    snippets_save_as_py : bpy.props.BoolProperty(
+        name='Save as py',
+        description="The snippet file will have '.py' extension instead of '.txt' by default.\nThis change nothing for the library use. But a good rule is to use '.py' when the code can run as a standalone script.",
         default=False)
 
     def draw(self, context):
@@ -108,6 +114,10 @@ class snippetsPreferences(bpy.types.AddonPreferences):
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")
 
+        layout.separator()
+        layout.label(text='Saving preferences:')
+        layout.prop(self, "snippets_save_as_py")
+ 
         layout.separator()
         layout.label(text='Preview preferences:')
         layout.prop(self, "snippets_preview_line_number")
