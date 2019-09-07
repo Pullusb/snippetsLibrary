@@ -98,7 +98,7 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 ## Changelog:
 
   v0.3.0 2019-09-07:
-  - UI cahnge : Now panel have his own 'Snippets' tab 
+  - UI change : Now panel have his own 'Snippets' tab
   - Library Clean : All shipped personnal snippets have been corrected to work in 2.8 (mentionned otherwise in the header for a few). Filenames are now with spaces and without prefix
   - Changed shipped snippets folder organisation.
   - UX change : The library use now plain filename without prefix. For IDE conversion it uses now the containing folder name as trigger.
