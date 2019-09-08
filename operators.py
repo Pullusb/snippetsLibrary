@@ -54,9 +54,19 @@ class SNIPPETSLIB_OT_actions(Operator):
 class SNIPPETSLIB_UL_items(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        # layout.use_property_split = True
         self.use_filter_show = True#force open the search feature
         layout.label(text=item.name, icon='WORDWRAP_ON')#label instead of prop disable renamimg feature (good)
         # layout.prop(item, "name", text="", emboss=False, translate=False, icon='WORDWRAP_ON')
+        
+        # layout.operator("sniptool.template_insert", text=item.name, emboss=True, translate=False, icon='WORDWRAP_ON')
+        
+        """ layout.label(text='', icon='WORDWRAP_ON')
+        layout.separator(factor=)
+        layout.operator("sniptool.template_insert", text=item.name, emboss=False) """
+
+        # layout.separator_spacer()
+        # layout.label(text=item.name, icon='WORDWRAP_ON')
 
         #Other tests
         #split = layout.split(0.3)
@@ -182,7 +192,8 @@ class SNIPPETSLIB_OT_saveSnippet(Operator):
         if name:
             if not re.search(r'\..{2-4}$', name):#check for an existing extension
                 #if no extension provided by the user use default
-                snipname = name + '.py' if self.pref.snippets_save_as_py else name + '.txt'
+                snipname = name + '.py'# format choice
+                # snipname = name + '.py' if self.pref.snippets_save_as_py else name + '.txt'# format choice
             
             # check here if snippets already exists
             filelist = []
@@ -245,7 +256,7 @@ class SNIPPETSLIB_OT_saveSnippet(Operator):
         layout = self.layout
         layout.label(text='Chose a name for this snippet')
         layout.prop(self, "newsnip", text="Name")
-        layout.prop(self.pref, "snippets_save_as_py", text="Save as .py")
+        # layout.prop(self.pref, "snippets_save_as_py", text="Save as .py")# format choice
 
 
 # insert button
@@ -261,6 +272,11 @@ class SNIPPETSLIB_OT_insertTemplate(Operator):
         scn = context.scene
         if locateLibrary():
             pref = get_addon_prefs()
+            if not len(scn.sniptool):
+                error = 'No snippets to insert in list\nClick the reload button to scan library.\nIf your library folder is empty, add new snippets with the "+" button'
+                self.report({'ERROR'}, error)
+                return{'CANCELLED'}
+
             snip = scn.sniptool[scn.sniptool_index].name
             text = getattr(bpy.context.space_data, "text", None)
             if not text or self.standalone:
@@ -304,7 +320,7 @@ class SNIPPETSLIB_OT_insertTemplate(Operator):
                 # if future tabstop implementation : put re.search here to get index position of stops
 
                 if '$' in FormattedText:#extra precautions...not really needed.
-                    # replace tabstop with placeholder (or delete if not)
+                    # replace tabstop with placeholder (or delete if no placeholder)
                     FormattedText = re.sub(r'\${\d{1,2}:?(.*?)}', r'\1', FormattedText)
                 # print(FormattedText)
                 insert_template(override, FormattedText)
@@ -314,8 +330,16 @@ class SNIPPETSLIB_OT_insertTemplate(Operator):
         else:
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)
+            return{'CANCELLED'}
         return{'FINISHED'}
 
+    """ 
+    def invoke(self, context, event):
+        print('event.value: ', event.value)
+        print('event.type: ', event.type)
+        print('event.shift: ', event.shift)
+        return self.execute(context)
+    """
 
 def reload_snippets():
     preview_enabled = False

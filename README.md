@@ -38,10 +38,13 @@ if you have some text selected in the editor the searchfield will be pre-filled 
 
 **Arrows up/down** : Just change current snippet.
 
-**Add** : Create a new snippet to the library from current text selection (pop up a windows)
-at the moment of save the snippet format can be changed from .txt (default) to .py format. The default format can be changed in the addon preference.
+**Add** : Create a new snippet in library from current text selection (pop up a windows).
+Snippets are saved as standalone '.py' file in the library folder.
+Once saved you can open the library (click the icon folder) and arrange your newly created snippets into a suiting category folder (creating folder and subfolder is OK).
+Thus it's not necessary, the containing folder name will be important if you use the `conversion` feature (see below).
+<!-- at the moment of save the snippet format can be changed from .txt (default) to .py format. The default format can be changed in the addon preference.
 It's completely up to you. Preferably use '.py' when the code can run as a standalone script
-<!-- Thought it's not mandatory, it is better to add a prefix (e.g: `obj_`) to the name. Try to keep it a very short word that represent a related category, think of it as a tag.
+Thought it's not mandatory, it is better to add a prefix (e.g: `obj_`) to the name. Try to keep it a very short word that represent a related category, think of it as a tag.
 When it's very generic I just use `bpy_` to tell it's related to blender python.
 This prefix serve not only to sort snippets (alphabetically) by category, but it's necessary when using the snippets conversion (covered later in this doc)
 Also preferably use '-' rather than spaces in snippet's name.-->
@@ -63,7 +66,7 @@ For example, this prove's usefull when multiple user work on a same server to sh
 
 **text editor properties** : Choose wich editor option to toggle on when a new textblock is automatically created 
 
-**Conversion** : Enjoy your blender made snippets on your favorite IDE !
+**Conversion** : Enjoy your blender made snippets in your favorite IDE !
 This buttons allow you to convert all your library to the format of external editors Sublime text, VScode or atom.
 The trigger word to call it will be the name of the snippet's containing folder with an heading '`s`' added. (This is meant to avoid having triggers with standard words)
 example: if the snippets was in the folder `bpy`, in sublime text you would start tapping `sbpy` to see suggestions of all related snippets.
@@ -83,19 +86,27 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 - add all scene properties in a property group
 
 ### Ideas considered :
+- Instead of reading again on disk for a preview/insertion/search, change the code design so information are stored after one reload
+- In that case maybe, replace the search bar to be also related to the content (merge the two search functions)
 - Maybe in the future consider putting all the built-in snippets as .py format and stop wondering if it should be txt or py...
 - adding bookmark of search tag (editable) this can replace the prefix for a quick search (but will way more disck access )
 - Precise open : Make the open folder operator open the folder of the selected snippets
 - Edit selected: Add an edit button that open the snippet from disk so it can be edited quickly
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
-- quick insert : Double click to insert (just dont know how to do that with UIlist without an ugly modal on each clic)
-- Convert and send : adding path to the addon pref so the user so converted snippets goes immetdiately in IDE folder (overwritting old conversion)
-- multi-source : adding support for multiple source folder and source change in user preferences...
-- online lib : (need multi-source) make some sort of repo where every user can pull-push snippets...(difficult)
+- quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
+- Convert and send : adding path to the addon pref so the user converted snippets goes immediately in IDE folder (overwritting old conversion)
+- multi-source : adding support for multiple source folder. choosing additional sources in user preferences...
+- online lib : (multi-source first) make some sort of repo where every user can pull-push snippets...(difficult)
+
 
 ---
 
 ## Changelog:
+
+  v0.3.1 2019-09-08:
+  - Cleaner insert : Add error message when trying to insert without reloading, or with an empty library.
+  - Snippet format : Changed default format to be ".py" the only save format ('txt' choice deleted from the preferences, user can still set an extension manually at the moment of saving)
+  - library format : Changed all all library to .py format (added used script to the meta snippets)
 
   v0.3.0 2019-09-07:
   - UI change : Now panel have his own 'Snippets' tab

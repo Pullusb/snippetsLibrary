@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 3, 0),
+    "version": (0, 3, 1),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -90,15 +90,14 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         description="activate line highlight by defaut",
         default=False)
 
-    snippets_save_as_py : bpy.props.BoolProperty(
-        name='Save as py',
-        description="The snippet file will have '.py' extension instead of '.txt' by default.\nThis change nothing for the library use. But a good rule is to use '.py' when the code can run as a standalone script.",
-        default=False)
+    # snippets_save_as_py : bpy.props.BoolProperty(# format choice
+        # name='Save as py',# format choice
+        # description="The snippet file will have '.py' extension instead of '.txt' by default.\nThis change nothing for the library use. But a good rule is to use '.py' when the code can run as a standalone script.",# format choice
+        # default=False)# format choice
 
     def draw(self, context):
         layout = self.layout
         # layout.use_property_split = True
-        
         # flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
         # layout = flow.column()
 
@@ -114,9 +113,10 @@ class snippetsPreferences(bpy.types.AddonPreferences):
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")
 
-        layout.separator()
-        layout.label(text='Saving preferences:')
-        layout.prop(self, "snippets_save_as_py")
+        ### Saving format
+        # layout.separator()# format choice
+        # layout.label(text='Saving preferences:')# format choice
+        # layout.prop(self, "snippets_save_as_py")# format choice
  
         layout.separator()
         layout.label(text='Preview preferences:')
