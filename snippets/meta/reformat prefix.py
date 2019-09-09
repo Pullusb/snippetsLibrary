@@ -28,7 +28,7 @@ delete_prefix = True
 ## ------
 
 curfile = basename(__file__)
-filelist = []
+
 for root, dirs, files in os.walk(path_to_your_lib, topdown=True):
     for f in files:
         if f == curfile:

@@ -42,7 +42,7 @@ def get_snippet_infos(fp):
         prefix = f.split('_')[0]
     else:
         #no undescore, use containing folder
-        prefix = basename(dirname(fp))
+        prefix = containing_folder(fp)
         if prefix.lower() == 'snippets':
             prefix = 'snip'
 
@@ -50,7 +50,8 @@ def get_snippet_infos(fp):
         print('Error,')
         return
     
-    trigger = 's'+prefix
+
+    trigger = 's'+prefix.replace(' ', '_')#kill spacebar in trigger
     #for exemple  sbpy sregex srig sops spy ssnip etc.
     """ if prefix:
         trigger = 's'+prefix
@@ -73,6 +74,10 @@ def convert_to_sublime_snip(snippet_list, dest):
 
     for s in snippet_list:
         snipname, text, description, trigger = get_snippet_infos(s)
+        # '<>' are unauthorized character for sublime description format
+        # use only filename as description anyway...
+        description = description.replace('<', ' ').replace('>', ' ')
+
         #just for sublime that us one file per snippet with calling name : dash instead of space in filename
         snipname = snipname.replace(' ', '-')
         # escape $ character in text
@@ -86,7 +91,7 @@ def convert_to_sublime_snip(snippet_list, dest):
     <tabTrigger>{1}</tabTrigger>
     <description>{2}</description>
     <scope>source.python</scope>
-</snippet>'''.format(sublimetext, trigger, description)
+</snippet>'''.format(sublimetext, trigger, snipname)#description #description field is the only text visible when trigger... prefer use snippet
 
         sublimefile = join(sublimedir, sublimefile)
         with open(sublimefile, 'w') as fd: fd.write(sublimesnip)

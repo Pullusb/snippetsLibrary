@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 3, 1),
+    "version": (0, 3, 2),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -52,7 +52,7 @@ modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in local
 
 class snippetsPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
-    snippets_custom_path : bpy.props.BoolProperty(
+    snippets_use_custom_path : bpy.props.BoolProperty(
         name='Use custom path',
         description="Set a cutom directory for snippets library",
         default=False)
@@ -107,8 +107,8 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         # layout.label(text="located aside the addon file (unless you enter a custom path)")
         # layout.separator()
 
-        layout.prop(self, "snippets_custom_path")
-        if self.snippets_custom_path:
+        layout.prop(self, "snippets_use_custom_path")
+        if self.snippets_use_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")

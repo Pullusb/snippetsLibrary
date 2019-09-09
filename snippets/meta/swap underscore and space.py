@@ -1,6 +1,6 @@
 ## ------
-#  Script to batch change extension on all files
-#  A filename is considered prefixed if there is an undescore '_' in it.
+#  Script to batch swap space and undescore (replace)  ' ' <-> '_'
+#  
 #  This can be handy if you want to merge all your library in one folder instead of use folder hierarchy.
 ## ------
 
@@ -22,23 +22,21 @@ path_to_lib = dirname(dirname(__file__))
 ## test at False --> Do the changes
 test = False
 
-extension = 'py'# txt
-## ------
+to_find = '_'# kill this character
+to_repl = ' '# replace by this one
 
-if not extension.startswith('.'):
-    #ensure extension dot
-    extension = '.'+extension
+## ------
 
 curfile = basename(__file__)
 
 for root, dirs, files in os.walk(path_to_lib, topdown=True):
     for f in files:
         if f == curfile:
-            print(f'Skip current executed file : {curfile}')
+            print(f'-> Skip current executed file : {curfile}')
             continue#skip this original file
-        if not f.endswith(extension):
+        if to_find in f:
             fp = join(root, f)
-            new = splitext(f)[0] + extension
+            new = f.replace(to_find, to_repl)
             print('rename: {} >> {}'.format(f,new))
             nfp = join(root, new)
             # print('nfp: ', nfp)

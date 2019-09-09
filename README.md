@@ -103,6 +103,9 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 ## Changelog:
 
+  v0.3.2 2019-09-09
+  - tiny fixes and new snippets
+
   v0.3.1 2019-09-08:
   - Cleaner insert : Add error message when trying to insert without reloading, or with an empty library.
   - Snippet format : Changed default format to be ".py" the only save format ('txt' choice deleted from the preferences, user can still set an extension manually at the moment of saving)

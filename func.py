@@ -2,6 +2,8 @@ import bpy
 import os, re
 import textwrap
 import time
+from os.path import dirname, basename
+
 
 def scan_definitions(text):
     'return a list of all def and class'
@@ -9,6 +11,11 @@ def scan_definitions(text):
     # print('------------')
     # return capture group (avoid the : of the end)
     return re.findall(r'^((?:def|class) [-\w]+\([-\w,\. =]*\)):', text, re.MULTILINE)
+
+def containing_folder(fp):
+    '''get a filepath, return only parent folder name (or empty string)'''
+    return basename(dirname(fp))
+
 
 def update_func(self, context):
     '''called when a new snippets is selected'''
@@ -118,7 +125,7 @@ def get_selected_text(self, text, one_line=False):
     get selected text (whitout using copy buffer)
     if no selection return None
     If one_line == True, if selection goes over one line return None.
-    Function from Dalai Felinto (dfelinto)
+    Customised function from Dalai Felinto (dfelinto)
     """
     current_line = text.current_line
     select_end_line = text.select_end_line
@@ -174,7 +181,7 @@ def locateLibrary(justGet=False):
     # print (addon)
     # prefs = addon.preferences
     prefs = get_addon_prefs()
-    cust_path = prefs.snippets_custom_path
+    cust_path = prefs.snippets_use_custom_path
     cust_fp = prefs.snippets_filepath
     if cust_path:#specified user location
         if cust_fp:
