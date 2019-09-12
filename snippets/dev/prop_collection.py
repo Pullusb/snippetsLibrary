@@ -1,0 +1,1 @@
+${1:bpy.types.Scene.}${2:Collection_variable_name} : ${3:bpy.props.}CollectionProperty(type=None, name="${4}", description="${5}", options={'ANIMATABLE'})${0}

@@ -37,14 +37,16 @@ def get_snippet_infos(fp):
     # Use prefix or containing folder name to use as trigger
     # Alternatively use 'snip' for non categorized snippets.
 
+    """# if there is an underscore use prefix
     if '_' in f:
-        #if there is an underscore use prefix
         prefix = f.split('_')[0]
     else:
-        #no undescore, use containing folder
-        prefix = containing_folder(fp)
-        if prefix.lower() == 'snippets':
-            prefix = 'snip'
+        prefix = containing_folder(fp)#no undescore, use containing folder
+    """
+    prefix = containing_folder(fp)#use containing folder
+
+    if prefix.lower() == 'snippets':
+        prefix = 'snip'
 
     if not prefix:
         print('Error,')
@@ -62,7 +64,7 @@ def get_snippet_infos(fp):
     return snipname, text, description, trigger
 
 # SUBLIME TEXT ---
-def convert_to_sublime_snip(snippet_list, dest):
+def convert_to_sublime_snip(snippet_list, dest, hierarchy=True):
     """
     Convert a list of filepath (plain text file)
     to sublime text snippets format
@@ -73,6 +75,7 @@ def convert_to_sublime_snip(snippet_list, dest):
     if not exists(sublimedir): os.mkdir(sublimedir)
 
     for s in snippet_list:
+        folder = containing_folder(s)
         snipname, text, description, trigger = get_snippet_infos(s)
         # '<>' are unauthorized character for sublime description format
         # use only filename as description anyway...
@@ -93,7 +96,14 @@ def convert_to_sublime_snip(snippet_list, dest):
     <scope>source.python</scope>
 </snippet>'''.format(sublimetext, trigger, snipname)#description #description field is the only text visible when trigger... prefer use snippet
 
-        sublimefile = join(sublimedir, sublimefile)
+        if hierarchy:
+            dfp = join(sublimedir, folder)
+            if not exists(dfp):
+                os.mkdir(dfp)
+            sublimefile = join(sublimedir, folder, sublimefile)
+        else:
+            sublimefile = join(sublimedir, sublimefile)
+
         with open(sublimefile, 'w') as fd: fd.write(sublimesnip)
 
 ### VSCODE ----
@@ -215,24 +225,25 @@ class SNIPPETSLIB_OT_convert(bpy.types.Operator):
             start = time.time()
             
             snippet_list = []
-            for root, dirs, files in os.walk(library, topdown=True):
-                for f in files:
-                    if f.endswith('.txt') or f.endswith('.py'):
-                        snippet_list.append(join(root, f))
+            for lib in library:
+                for root, dirs, files in os.walk(lib, topdown=True):
+                    for f in files:
+                        if f.endswith(('.txt', '.py', '.osl')):
+                            snippet_list.append(join(root, f))
             
-            dest = join(dirname(dirname(library)), 'converted_snippets')#up one folder from lib then convert folder...
+            dest = join(dirname(dirname(library[0])), 'converted_snippets')#up one folder from lib then convert folder...
             if not exists(dest):
                 os.mkdir(dest)
 
             if self.convertid == 0 or self.convertid == 1:
-                convert_to_sublime_snip(snippet_list, dest)
+                convert_to_sublime_snip(snippet_list, dest, hierarchy=True)
             if self.convertid == 0 or self.convertid == 2:
                 convert_to_vscode_snip(snippet_list, dest)
             if self.convertid == 0 or self.convertid == 3:
                 convert_to_atom_snip(snippet_list, dest)
 
             openFolder(dest)
-            info = f'Finished conversion of {len(snippet_list)} snippets'
+            info = f'Finished conversion of {len(snippet_list)} snippets. Duration:{time.time()-start:.2f}s'
             self.report({'INFO'}, info)
         else:
             pathErrorMsg = locateLibrary(True) + ' not found or inaccessible'

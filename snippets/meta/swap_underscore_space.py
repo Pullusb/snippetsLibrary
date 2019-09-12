@@ -22,8 +22,8 @@ path_to_lib = dirname(dirname(__file__))
 ## test at False --> Do the changes
 test = False
 
-to_find = '_'# kill this character
-to_repl = ' '# replace by this one
+to_find = ' '# kill this character
+to_repl = '_'# replace by this one
 
 ## ------
 

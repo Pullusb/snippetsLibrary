@@ -14,9 +14,10 @@ Looking for the blender 2.7 version ? [go to this repo](https://github.com/Pullu
 Allow you use and manage a library of your own code snippets.
 Works in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier
 
-A new Panel is added in Dev tab category of the text editor's toolbar
+A new _Snippets_ tab will be in the text editor's toolbar (accessible with `ctrl + T`).
 Snippets will be saved and stored as invidual plain text files in a folder named 'snippets'.
-This folder (created automatically at first use) is located alongside the addon files (unless you enter a custom path).
+This folder is located by default alongside the addon files (unless you enter a custom path in addon preferences).
+Blender buit-in snippets are also scanned (you can disable it in addon pref).
 The addon is shipped with my personal pack of usefull code snippets (once installed just click the reload button in the addon UI to diplay them)
 
 
@@ -33,8 +34,8 @@ Here description of the button list in order they appear.
 
 **Reload** : Load/Reload the list of snippet's from library. It load only '.txt' or '.py' files
 
-**Search** : Searching in content and title of the library (This will reload filtering only matching element). Hit the Reload button to get back to full list.
-if you have some text selected in the editor the searchfield will be pre-filled with it (if selection is not multiline).
+<!-- **Search** : Searching in content and title of the library (This will reload filtering only matching element). Hit the Reload button to get back to full list.
+if you have some text selected in the editor the searchfield will be pre-filled with it (if selection is not multiline). -->
 
 **Arrows up/down** : Just change current snippet.
 
@@ -52,7 +53,11 @@ Also preferably use '-' rather than spaces in snippet's name.-->
 
 **Delete** : This will delete the selected snippet file (pop up a confirmation windows). This action is irreversible since the snippets text file is deleted from disk.
 
-**Open library folder** : open the library folder in your OS browser.
+**Open library folder** : Open the library folder in your OS browser. shift+click on the button will open at current selected snippet folder.
+
+
+**Search  field** : options : search between content and title, substractive search, show prefix, reverse order
+_filter by name is currently broken so the feature has been removed_
 
 **Preview** : If activated, a preview of the selected snippet will appear below. Also display a list of def and class.
 The number of line displayed can be changed in the addon preferences
@@ -61,6 +66,8 @@ The number of line displayed can be changed in the addon preferences
 
 **Use custom path** : Change the source folder of the snippets library.
 For example, this prove's usefull when multiple user work on a same server to share the same library (if the addon is not already loaded from server).
+
+**Secondary path** : Manage other folderpath to scan as part of the library. Also choose to add blender build-in snippets in the lib (Those are already accessible with template menu in text editor)
 
 **Max preview lines** : Choose max line number for preview (default 10)
 
@@ -83,26 +90,54 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 
 ## Todo:
-- add all scene properties in a property group
+- Try to re-implement this search option with the new design :
+  - Case insensitive search (more usefull)
+  - Regex search
+  - sort-alphabetically
+- [Prefill with selection](https://blender.stackexchange.com/questions/106282/access-to-filter-name-property-with-python)
+- cleaner props : Put all scene properties in a property group
+<!-- - Add auto-find snippet when it has been moved with the new 0.4 code design so reload is not needed -->
 
 ### Ideas considered :
-- Instead of reading again on disk for a preview/insertion/search, change the code design so information are stored after one reload
-- In that case maybe, replace the search bar to be also related to the content (merge the two search functions)
-- Maybe in the future consider putting all the built-in snippets as .py format and stop wondering if it should be txt or py...
-- adding bookmark of search tag (editable) this can replace the prefix for a quick search (but will way more disck access )
-- Precise open : Make the open folder operator open the folder of the selected snippets
+- adding bookmark of search tag (editable) this can replace the prefix for a quick search
+or just an enum/list of the current folders to choose what to scan
 - Edit selected: Add an edit button that open the snippet from disk so it can be edited quickly
+- Find a way to resolve eventual conflict (different file with same name) -> example, pop up a windows with infos display and button to do action on name who have ultiple entry.
+- Maybe avoid scan doubles.
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
-- quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
 - Convert and send : adding path to the addon pref so the user converted snippets goes immediately in IDE folder (overwritting old conversion)
-- multi-source : adding support for multiple source folder. choosing additional sources in user preferences...
-- online lib : (multi-source first) make some sort of repo where every user can pull-push snippets...(difficult)
+- quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
+- online lib : Make some sort of repo where every user can pull-push snippets...(super difficult)
 
 
 ---
 
 ## Changelog:
 
+  v0.4.0 :
+  - Major code rewrite on snippets handling:
+    - Data not read on-time but stored at reload
+    - Reload takes longer but all other operations are faster.
+    - Less disk access
+    - allow better search
+  - New addon preferences : Scan buid-in templates (default True), Add blender templates to library
+  - Multi-source : adding support for multiple source folder. choosing additional sources in a new UIlist in addon preferences
+  - new UI option : show category in a second left-column
+  - New search :
+    - Search in title and content are merged in the UI searchfield with an option to toggle content/title search.
+    - Dynamic realtime search in content
+    - Regex search is no longer available. But Wildcard '*' might be powerfull enough
+    - removed sort-alphabetically : sorting alphabetically broken, fix in further version
+    - Drawback : Prefill option disabled for now, can't find [how to access filter_name property](https://blender.stackexchange.com/questions/106282/access-to-filter-name-property-with-python)
+
+  - Unified python snippet format :
+    - All the pre-shipped snippets are now .py format
+    - Save only as py, option to choose between format has been removed
+  - Precise open : shift+click on the button open the current selected snippet folder (and select it on windows system)
+
+  v0.3.3 :
+  - Underscore in names : snippets change to '_'
+  - Popup powerup : improvements for the save pop-up now auto format to a correct name and dynamic hint display (but sadly the dialog box redraw only when hitting enter after typing the name)
   v0.3.2 2019-09-09
   - tiny fixes and new snippets
 

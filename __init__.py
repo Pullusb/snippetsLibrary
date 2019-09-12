@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 3, 2),
+    "version": (0, 4, 0),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -31,7 +31,6 @@ bl_info = {
 
 
 import bpy
-from bpy.props import IntProperty, CollectionProperty #, StringProperty
 
 # load and reload submodules
 ##################################
@@ -49,6 +48,58 @@ modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in local
 
 
 ### addon preferences panel
+
+class SNIPPETSLIB_OT_libPathactions(Operator):
+    bl_idname = "sniptool.multi_path_action"
+    bl_label = "Action on additional paths"
+
+    action: bpy.props.EnumProperty(
+        items=(
+            ('REMOVE', "Remove", ""),
+            ('ADD', "Add", "")
+        )
+    )
+
+    def invoke(self, context, event):
+        pref = get_addon_prefs()
+        # scn = context.scene
+        idx = pref.multipath_index
+
+        try:
+            item = pref.multipath[idx]
+        except IndexError:
+            pass
+        
+        else:
+            if self.action == 'REMOVE':
+                info = 'Item %s removed from list' % (pref.multipath[pref.multipath_index].name)
+                pref.multipath_index -= 1
+                if pref.multipath_index < 0: pref.multipath_index = 0
+                self.report({'INFO'}, info)
+                pref.multipath.remove(idx)
+                
+        if self.action == 'ADD':
+            pref.multipath.add()       
+            pref.multipath_index = (len(pref.multipath))
+
+        return {"FINISHED"}
+
+class SNIPPETSLIB_pathProp(bpy.types.PropertyGroup):
+    """Prop group for multipath UIlist"""
+    name = StringProperty( name="",
+    description="Additional filepaths",
+    subtype='FILE_PATH',
+    default="")
+
+class SNIPPETSLIB_UL_libpath(UIList):
+    """list of multiple library path to scan"""
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index, flt_flag):
+        split=layout.split(factor=0.05)
+        split.label(text=str(index+1))
+        split.prop(item, "name", emboss=False, translate=False)#, icon='WORDWRAP_ON'
+        # layout.prop(item, "name", emboss=False, translate=False)#, icon='WORDWRAP_ON'
+
 
 class snippetsPreferences(bpy.types.AddonPreferences):
     bl_idname = __name__
@@ -90,10 +141,19 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         description="activate line highlight by defaut",
         default=False)
 
+    snippets_use_standard_template : bpy.props.BoolProperty(
+        name='List blender default template',
+        description="Include blender build-in template in library. Located in install folder (accessible in text editor footer menu)",
+        default=True)
+
     # snippets_save_as_py : bpy.props.BoolProperty(# format choice
         # name='Save as py',# format choice
         # description="The snippet file will have '.py' extension instead of '.txt' by default.\nThis change nothing for the library use. But a good rule is to use '.py' when the code can run as a standalone script.",# format choice
         # default=False)# format choice
+
+    ### list of additional pathes
+    multipath : bpy.props.CollectionProperty(type=SNIPPETSLIB_pathProp)#liloo multipath :)
+    multipath_index : bpy.props.IntProperty()
 
     def draw(self, context):
         layout = self.layout
@@ -107,17 +167,37 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         # layout.label(text="located aside the addon file (unless you enter a custom path)")
         # layout.separator()
 
+        ### main path (default or custom)
+        layout.label(text='Library path')
+
+        layout.label(text='Main library:')
         layout.prop(self, "snippets_use_custom_path")
         if self.snippets_use_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
             layout.prop(self, "snippets_filepath")
             layout.label(text="May not work if space are in path.")
 
+        ### secondary sources
+        layout.label(text='Additional sources:')
+        # layout.label(text='use default template')
+        layout.prop(self, "snippets_use_standard_template")
+
+        layout.label(text='Enter secondary folder filepath to scan:')
+        ### multi paths UIlist
+        row = layout.row()
+        row.template_list("SNIPPETSLIB_UL_libpath", "", self, "multipath", self, "multipath_index", rows=2)
+        col = row.column(align=True)
+        col.operator("sniptool.multi_path_action", icon='ADD', text="").action = 'ADD'#NEWFOLDER
+        col.operator("sniptool.multi_path_action", icon='REMOVE', text="").action = 'REMOVE'
+
+
+        layout = self.layout
         ### Saving format
         # layout.separator()# format choice
         # layout.label(text='Saving preferences:')# format choice
         # layout.prop(self, "snippets_save_as_py")# format choice
- 
+
+        ### UI preferences
         layout.separator()
         layout.label(text='Preview preferences:')
         layout.prop(self, "snippets_preview_line_number")
@@ -154,8 +234,11 @@ SNIPPETSLIB_sniptoolProp,
 SNIPPETSLIB_UL_items,
 SNIPPETSLIB_PT_uiList,
 SNIPPETSLIB_OT_deleteSnippet,
-SNIPPETSLIB_OT_searchItems,
+# SNIPPETSLIB_OT_searchItems,
 SNIPPETSLIB_OT_convert,
+SNIPPETSLIB_OT_libPathactions,
+SNIPPETSLIB_pathProp,
+SNIPPETSLIB_UL_libpath,
 snippetsPreferences,
 )
 
@@ -169,15 +252,13 @@ def register():
         traceback.print_exc()
 
     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
-    bpy.types.Scene.sniptool = CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
-    # bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func, set=set_update_func)
+    bpy.types.Scene.sniptool = bpy.props.CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
     bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func)
     bpy.types.Scene.sniptool_preview = bpy.props.StringProperty()
     bpy.types.Scene.sniptool_preview_use = bpy.props.BoolProperty(default=True, description='If enabled show a preview of the snippets and list its methods')
     bpy.types.Scene.sniptool_preview_defs = bpy.props.StringProperty()
-    bpy.types.Scene.sniptool_search = bpy.props.StringProperty(description='Note: The search is case sensitive')
+    # bpy.types.Scene.sniptool_search = bpy.props.StringProperty(description='Note: The search is case sensitive')
 
-    
     #launch first reload automatically
     # reload_snippets()#still bad context... cant access scene from pref.
     # bpy.ops.sniptool.reload_list()#not the right context
@@ -195,7 +276,7 @@ def unregister():
     del bpy.types.Scene.sniptool_preview
     del bpy.types.Scene.sniptool_preview_use
     del bpy.types.Scene.sniptool_preview_defs
-    del bpy.types.Scene.sniptool_search
+    # del bpy.types.Scene.sniptool_search
 
 if __name__ == "__main__":
     register()
