@@ -86,7 +86,7 @@ class SNIPPETSLIB_OT_libPathactions(Operator):
 
 class SNIPPETSLIB_pathProp(bpy.types.PropertyGroup):
     """Prop group for multipath UIlist"""
-    name = StringProperty( name="",
+    name : StringProperty( name="",
     description="Additional filepaths",
     subtype='FILE_PATH',
     default="")
