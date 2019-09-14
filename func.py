@@ -112,6 +112,9 @@ def update_func(self, context):
         
         # get rid of tabstops and show only placeholder:
         content = re.sub(r'\${\d{1,2}:?(.*?)}', r'\1', content)
+        
+        #fix unrecognize tab character in label.
+        content = content.replace('\t', '    ')
 
         # get first lines of the text to feed preview
         lines = []

@@ -113,8 +113,11 @@ or just an enum/list of the current folders to choose what to scan
 ---
 
 ## Changelog:
+  
+  v0.4.1 :
+  - preview fix : '\t' Tab indentation character now display correctly in preview label (converted tab to space)
 
-  v0.4.0 :
+  v0.4.0 2019-09-13:
   - Major code rewrite on snippets handling:
     - Data not read on-time but stored at reload
     - Reload takes longer but all other operations are faster.
