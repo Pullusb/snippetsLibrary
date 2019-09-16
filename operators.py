@@ -271,20 +271,20 @@ class SNIPPETSLIB_OT_saveSnippet(Operator):
         scn = context.scene
         # check name
         snipname = formatted_name(self.newsnip)#equivalent of self.save_name
-
             
-        # check here if snippets already exists
-        if snipname in self.filelist:
-            error = f'Snippet "{name}" already exists in library'
-            self.report({'ERROR'}, error)
-            return{'CANCELLED'}
-
         if not snipname:
             #return error or use a placeholder (can be usefull for fast saving when hasty)
             snipname = generate_unique_snippet_name()
             print('no name specified, using generated placeholder:', snipname)
             # self.report({'ERROR'}, 'No Name.\nYou need to specify a naame for your snippet')
             # return{'CANCELLED'}
+
+        # check here if snippets already exists
+        if snipname in self.filelist:
+            error = f'Snippet "{name}" already exists in library'
+            self.report({'ERROR'}, error)
+            return{'CANCELLED'}
+
 
         ## if arriverd here, all good
         # save the file on disk

@@ -170,6 +170,7 @@ def formatted_name(name):
             # snipname = name + '.py' if self.pref.snippets_save_as_py else name + '.txt'# format choice
 
         return name
+    return ''
 
 def update_save_func(self, context):
     '''called when typing in field of new snippets creation'''

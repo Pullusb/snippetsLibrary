@@ -114,6 +114,9 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
   
+  v0.4.2 :
+  - bugfix when entering nothing in save field (save with a generated random number and date)
+
   v0.4.1 :
   - preview fix : '\t' Tab indentation character now display correctly in preview label (converted tab to space)
 
