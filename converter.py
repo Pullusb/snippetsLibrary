@@ -130,9 +130,10 @@ def convert_to_vscode_snip(snippet_list, dest):
         snipname, text, description, trigger = get_snippet_infos(s)
 
         fd = open(vscodefile, 'a')
-        # # vscode need a lot of formating with escapes for chars and all...(kind of super lame)
 
-        vscodetext = text.replace(r'"', r'\"').replace('\\', r'\\\\')#.replace(r'$', r'\$')
+        # escape in json is BAD ! \\\\ does not put \\ but \  so use \\\\\\\\ for a double backslash...
+        vscodetext = text.replace('\\', '\\\\').replace('\\\\', '\\\\\\\\').replace(r'"', r'\"')#.replace(r'$', r'\$')
+        # or re.sub(r'\\', r'\\\\', t) for the slashes 
         vscodetext = simple_dollar.sub('\\$', vscodetext)
         vscodetext = '\n'.join(['    "{}",'.format(l) for l in vscodetext.splitlines()]).rstrip('\n,')
         # print(type(vscodetext), 'vscodetext: ', vscodetext)

@@ -90,7 +90,8 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 
 ## Todo:
-- Try to re-implement this search option with the new design :
+- title case for the name (need cases insensitive search, at least on titles)
+- Try to re-implement previous search option with the new design :
   - Case insensitive search (more usefull)
   - Regex search
   - sort-alphabetically
@@ -114,6 +115,9 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
   
+  v0.4.3 :
+  - fix a bug with converter export for vscode (because [backslash escaping sequence in json is super weird](https://github.com/Microsoft/vscode/issues/33933))
+
   v0.4.2 :
   - bugfix when entering nothing in save field (save with a generated random number and date)
 
