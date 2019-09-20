@@ -22,7 +22,7 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 4, 3),
+    "version": (0, 4, 4),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -146,6 +146,29 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         description="Include blender build-in template in library. Located in install folder (accessible in text editor footer menu)",
         default=True)
 
+    snippets_convertpath_sublime : bpy.props.StringProperty(
+        name="sublime-text snippets path",
+        description="Path to save snippets at library conversion (/!\ overwrite files with same name)",
+        subtype='DIR_PATH',
+        )
+
+    snippets_convertpath_vscode : bpy.props.StringProperty(
+        name="vscode snippets path",
+        description="Path to save snippets at library conversion (/!\ overwrite python.json)",
+        subtype='DIR_PATH',
+        )
+    
+    snippets_convertpath_atom : bpy.props.StringProperty(
+        name="atom snippets path",
+        description="Path to save snippets at library conversion (/!\ overwrite snippets.cson)",
+        subtype='DIR_PATH',
+        )
+
+    snippets_convert_open : bpy.props.BoolProperty(
+        name='Open containing folders after conversion',
+        description="After conversion is finished, open target directory of new converted snippets",
+        default=True)
+
     # snippets_save_as_py : bpy.props.BoolProperty(# format choice
         # name='Save as py',# format choice
         # description="The snippet file will have '.py' extension instead of '.txt' by default.\nThis change nothing for the library use. But a good rule is to use '.py' when the code can run as a standalone script.",# format choice
@@ -212,6 +235,13 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         layout.separator()
         layout.label(text="Convert the library to external editor format:")
         layout.label(text="Sublime Text, VScode, Atom")
+
+        layout.prop(self, "snippets_convertpath_sublime")
+        layout.prop(self, "snippets_convertpath_vscode")
+        layout.prop(self, "snippets_convertpath_atom")
+        layout.prop(self, "snippets_convert_open")
+        layout.label(text="If paths above are not set, destination will be a folder 'converted_snippets' in the addon folder")
+        
 
         row=layout.row(align=True)
         row.operator('sniptool.convert', text='All').convertid = 0

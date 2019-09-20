@@ -97,7 +97,6 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
   - sort-alphabetically
 - [Prefill with selection](https://blender.stackexchange.com/questions/106282/access-to-filter-name-property-with-python)
 - cleaner props : Put all scene properties in a property group
-<!-- - Add auto-find snippet when it has been moved with the new 0.4 code design so reload is not needed -->
 
 ### Ideas considered :
 - adding bookmark of search tag (editable) this can replace the prefix for a quick search
@@ -106,7 +105,6 @@ or just an enum/list of the current folders to choose what to scan
 - Find a way to resolve eventual conflict (different file with same name) -> example, pop up a windows with infos display and button to do action on name who have ultiple entry.
 - Maybe avoid scan doubles.
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
-- Convert and send : adding path to the addon pref so the user converted snippets goes immediately in IDE folder (overwritting old conversion)
 - quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
 - online lib : Make some sort of repo where every user can pull-push snippets...(super difficult)
 
@@ -114,6 +112,11 @@ or just an enum/list of the current folders to choose what to scan
 ---
 
 ## Changelog:
+
+
+  v0.4.4 :
+  - Convert and send : adding path to the addon pref so the user converted snippets goes immediately in IDE folder (overwritting old conversion)
+  - added option to turn off folder opening upon conversion finish
   
   v0.4.3 :
   - fix a bug with converter export for vscode (because [backslash escaping sequence in json is super weird](https://github.com/Microsoft/vscode/issues/33933))

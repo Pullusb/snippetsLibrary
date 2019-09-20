@@ -71,8 +71,7 @@ def convert_to_sublime_snip(snippet_list, dest, hierarchy=True):
     """
     simple_dollar = re.compile(r'\$(?!{\d{1,2}:?.*?})')
 
-    sublimedir = join(dest, 'sublime')
-    if not exists(sublimedir): os.mkdir(sublimedir)
+    sublimedir = dest
 
     for s in snippet_list:
         folder = containing_folder(s)
@@ -116,9 +115,7 @@ def convert_to_vscode_snip(snippet_list, dest):
     simple_dollar = re.compile(r'\$(?!{\d{1,2}:?.*?})')
 
     vscodefile = 'python.json'#'python.snippets.json'
-    vscodedir = join(dest, 'vscode')
-    if not exists(vscodedir): os.mkdir(vscodedir)
-    vscodefile = join(vscodedir, vscodefile)
+    vscodefile = join(dest, vscodefile)
 
     #plug all into one file...
 
@@ -167,10 +164,7 @@ def convert_to_atom_snip(snippet_list, dest):
     simple_dollar = re.compile(r'\$(?!{\d{1,2}:?.*?})')
 
     atomfile = 'snippets.cson'
-
-    atomdir = join(dest, 'atom')
-    if not exists(atomdir): os.mkdir(atomdir)
-    atomfile = join(atomdir, atomfile)
+    atomfile = join(dest, atomfile)
     #atom may need tabulation (+ 2 more space for the source type definition above)
 
     #plug all into one file...
@@ -220,6 +214,7 @@ class SNIPPETSLIB_OT_convert(bpy.types.Operator):
     convertid : bpy.props.IntProperty(default=0)
 
     def execute(self, context):
+        prefs = get_addon_prefs()
         scn = context.scene
         library = locateLibrary()
         if library:
@@ -233,17 +228,63 @@ class SNIPPETSLIB_OT_convert(bpy.types.Operator):
                             snippet_list.append(join(root, f))
             
             dest = join(dirname(dirname(library[0])), 'converted_snippets')#up one folder from lib then convert folder...
-            if not exists(dest):
-                os.mkdir(dest)
+
+            # Create converted_snippets folder only if at least one of the 3 destination use the default path
+            if not prefs.snippets_convertpath_sublime or not prefs.snippets_convertpath_vscode or not prefs.snippets_convertpath_atom:
+                if not exists(dest):
+                    os.mkdir(dest)
+
+            all_dest = []
+            default_dest = False
 
             if self.convertid == 0 or self.convertid == 1:
-                convert_to_sublime_snip(snippet_list, dest, hierarchy=True)
-            if self.convertid == 0 or self.convertid == 2:
-                convert_to_vscode_snip(snippet_list, dest)
-            if self.convertid == 0 or self.convertid == 3:
-                convert_to_atom_snip(snippet_list, dest)
+                sublime_dest = dest
+                if prefs.snippets_convertpath_sublime and exists(prefs.snippets_convertpath_sublime):
+                    sublime_dest = join(prefs.snippets_convertpath_sublime, 'blender_snippets')
+                    if not exists(sublime_dest): os.mkdir(sublime_dest)
+                    all_dest.append(sublime_dest)
+                
+                else:
+                    sublime_dest = join(dest, 'sublime')
+                    if not exists(sublime_dest): os.mkdir(sublime_dest)
+                    default_dest = True
 
-            openFolder(dest)
+                convert_to_sublime_snip(snippet_list, sublime_dest, hierarchy=True)
+
+            if self.convertid == 0 or self.convertid == 2:
+                vscode_dest = dest
+                if prefs.snippets_convertpath_vscode and exists(prefs.snippets_convertpath_vscode):
+                    vscode_dest = prefs.snippets_convertpath_vscode
+                    all_dest.append(vscode_dest)
+                
+                else:
+                    vscode_dest = join(dest, 'vscode')
+                    if not exists(vscode_dest): os.mkdir(vscode_dest)
+                    default_dest = True
+
+                convert_to_vscode_snip(snippet_list, vscode_dest)
+
+            if self.convertid == 0 or self.convertid == 3:
+                atom_dest = dest
+                if prefs.snippets_convertpath_atom and exists(prefs.snippets_convertpath_atom):
+                    atom_dest = prefs.snippets_convertpath_atom
+                    all_dest.append(atom_dest)
+                
+                else:
+                    atom_dest = join(dest, 'atom')
+                    if not exists(atom_dest): os.mkdir(atom_dest)
+                    default_dest = True
+
+                convert_to_atom_snip(snippet_list, atom_dest)
+
+            if prefs.snippets_convert_open:
+                #open folder of conversion
+                if all_dest:
+                    for d in all_dest:
+                        openFolder(d)
+                if default_dest:
+                    openFolder(dest)
+
             info = f'Finished conversion of {len(snippet_list)} snippets. Duration:{time.time()-start:.2f}s'
             self.report({'INFO'}, info)
         else:

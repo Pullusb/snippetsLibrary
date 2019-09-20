@@ -210,7 +210,7 @@ def openFolder(folderpath):
 
     folderpath = os.path.normpath(folderpath)
     fullcmd = cmd.split() + [folderpath]
-    print(fullcmd)
+    # print('use opening command :', fullcmd)
     subprocess.Popen(fullcmd)
     return ' '.join(fullcmd)#back to string to print
 
