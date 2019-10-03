@@ -13,8 +13,8 @@ from bpy.props import (IntProperty,
                         )
 
 from bpy.types import (Operator,
-                       Panel
-                       PropertyGroup
-                       UIList
-                       AddonPreferences
+                       Panel,
+                       PropertyGroup,
+                       UIList,
+                       AddonPreferences,
                        )
