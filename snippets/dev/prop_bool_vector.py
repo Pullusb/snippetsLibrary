@@ -1,1 +1,1 @@
-${1:bpy.types.Scene.}${2:BoolVector_variable_name} : ${3:bpy.props.}BoolVectorProperty(name="${4}", description="${5}", default=(${6:False}, ${6:False}, ${6:False}), options={'ANIMATABLE'}, subtype='NONE', size=3, update=None, get=None, set=None)${0}
+${1:BoolVector_variable_name} : ${2:bpy.props.}BoolVectorProperty(name="${3}", description="${4}", default=(${5:False}, ${5:False}, ${5:False}), size=3, subtype='NONE', options={'ANIMATABLE'}${6:, update=None, get=None, set=None})${0}

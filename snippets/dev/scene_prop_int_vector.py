@@ -1,4 +1,4 @@
 # default (sequence) – sequence of ints the length of size.
 # options (set) – Enumerator in ['HIDDEN', 'SKIP_SAVE', 'ANIMATABLE', 'LIBRARY_EDITABLE', 'PROPORTIONAL','TEXTEDIT_UPDATE'].
 # subtype (string) – Enumerator in ['COLOR', 'TRANSLATION', 'DIRECTION', 'VELOCITY', 'ACCELERATION', 'MATRIX', 'EULER', 'QUATERNION', 'AXISANGLE', 'XYZ', 'COLOR_GAMMA', 'LAYER', 'LAYER_MEMBER', 'POWER', 'NONE'].
-${1:IntVector_variable_name} : ${2:bpy.props.}IntVectorProperty(name="${3}", description="${4}", default=(0, 0, 0), min=${5:-2**31}, max=${6:2**31-1}, soft_min=${7:-2**31}, soft_max=${8:2**31-1}, step=${9:1}, subtype='NONE', size=3, options={'ANIMATABLE'}${10:, update=None, get=None, set=None})${0}
+bpy.types.Scene.${1:IntVector_variable_name} = ${2:bpy.props.}IntVectorProperty(name="${3}", description="${4}", default=(0, 0, 0), min=${5:-2**31}, max=${6:2**31-1}, soft_min=${7:-2**31}, soft_max=${8:2**31-1}, step=${9:1}, subtype='NONE', size=3, options={'ANIMATABLE'}${10:, update=None, get=None, set=None})${0}

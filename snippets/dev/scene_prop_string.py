@@ -1,3 +1,3 @@
 # subtype (string) – Enumerator in ['FILE_PATH', 'DIR_PATH', 'FILE_NAME', 'BYTE_STRING', 'PASSWORD', 'NONE'].
 # options (set) – Enumerator in ['HIDDEN', 'SKIP_SAVE', 'ANIMATABLE', 'LIBRARY_EDITABLE', 'PROPORTIONAL','TEXTEDIT_UPDATE'].
-${1:String_variable_name} : ${2:bpy.props.}StringProperty(name="${3}", description="${4}", default="${5}", maxlen=0, subtype='NONE', options={'ANIMATABLE'}${6:, update=None, get=None, set=None})${0}
+bpy.types.Scene.${1:String_variable_name} = ${2:bpy.props.}StringProperty(name="${3}", description="${4}", default="${5}", maxlen=0, subtype='NONE', options={'ANIMATABLE'}${6:, update=None, get=None, set=None})${0}

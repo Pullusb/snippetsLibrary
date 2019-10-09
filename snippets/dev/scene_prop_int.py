@@ -1,0 +1,3 @@
+# options (set) – Enumerator in ['HIDDEN', 'SKIP_SAVE', 'ANIMATABLE', 'LIBRARY_EDITABLE', 'PROPORTIONAL','TEXTEDIT_UPDATE'].
+# subtype (string) – Enumerator in ['PIXEL', 'UNSIGNED', 'PERCENTAGE', 'FACTOR', 'ANGLE', 'TIME', 'DISTANCE', 'NONE'].
+bpy.types.Scene.${1:Int_variable_name} = ${2:bpy.props.}IntProperty(name="${3}", description="${4}", default=${5:0}, min=${6:-2**31}, max=${7:2**31-1}, soft_min=${8:-2**31}, soft_max=${9:2**31-1}, step=${10:1}, subtype='NONE', options={'ANIMATABLE'}${11:, update=None, get=None, set=None})${0}

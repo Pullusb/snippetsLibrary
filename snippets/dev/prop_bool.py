@@ -1,1 +1,1 @@
-${1:bpy.types.Scene.}${2:Bool_variable_name} : ${3:bpy.props.}BoolProperty(name="${4}", description="${5}", default=${6:False}, options={'ANIMATABLE'}, subtype='NONE', update=None, get=None, set=None)${0}
+${1:Bool_variable_name} : ${2:bpy.props.}BoolProperty(name="${3}", description="${4}", default=${5:False}, subtype='NONE', options={'ANIMATABLE'}${6:, update=None, get=None, set=None})${0}
