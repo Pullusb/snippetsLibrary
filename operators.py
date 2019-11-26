@@ -196,16 +196,16 @@ class SNIPPETSLIB_PT_uiList(Panel):
         if bpy.context.scene.sniptool_preview_use:
             if bpy.context.scene.sniptool_preview:
                 box = layout.box()
-                row = box.column()
+                col = box.column(align=True)
                 for l in bpy.context.scene.sniptool_preview.split('\n'):
-                    row.label(text=l)
+                    col.label(text=l)
             
             # def scan box 
             if bpy.context.scene.sniptool_preview_defs:
                 box = layout.box()
-                row = box.column()
+                col = box.column(align=True)
                 for l in bpy.context.scene.sniptool_preview_defs.split('\n'):
-                    row.label(text=l)
+                    col.label(text=l)
 
 
 # -------------------------------------------------------------------

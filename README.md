@@ -115,6 +115,8 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
 
+  v0.4.5 :
+  - Preview have now a better line spacing (tin2tin "column(align=True)" suggestion)
 
   v0.4.4 :
   - Convert and send : adding path to the addon pref so the user converted snippets goes immediately in IDE folder (overwritting old conversion)
