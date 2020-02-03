@@ -50,12 +50,12 @@ def scan_multi_folders(fplist):
 
 def load_text(fp):
     if fp:
-        with open(fp, 'r') as fd:
+        with open(fp, 'r', encoding='utf-8') as fd:
             text=fd.read()
         return text
     else:
         print('in load_text: no fp to read !')
-        return(0)
+        return 0
 
 def save_template(fp, name, text):
     fd = open(join(fp, name),'w')
