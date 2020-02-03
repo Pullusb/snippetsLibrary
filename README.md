@@ -115,6 +115,9 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
 
+  v0.4.6 :
+  - Fix possible encoding error (load files with option encoding='utf-8')
+
   v0.4.5 :
   - Preview have now a better line spacing (tin2tin "column(align=True)" suggestion)
 
