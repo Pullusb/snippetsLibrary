@@ -11,12 +11,12 @@ def openFolder(folderpath):
     myOS = platform
     if myOS.startswith('linux') or myOS.startswith('freebsd'):
         # linux
-        cmd = 'xdg-open '
+        cmd = 'xdg-open'
         #print("operating system : Linux")
     elif myOS.startswith('win'):
         # Windows
-        #cmd = 'start '
-        cmd = 'explorer '
+        #cmd = 'start'
+        cmd = 'explorer'
         #print("operating system : Windows")
         if not folderpath:
             return('/')
@@ -24,7 +24,7 @@ def openFolder(folderpath):
     else:#elif myOS == "darwin":
         # OS X
         #print("operating system : MACos")
-        cmd = 'open '
+        cmd = 'open'
 
     if not folderpath:
         return('//')
