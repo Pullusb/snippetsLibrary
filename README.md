@@ -92,13 +92,15 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 
 
 ## Todo:
+- Cleanning function : Clear memory button (snippets stay in blend files when load)
+  - Think a way of auto cleaning... complex (maybe have a preference to auto-clean on save. But can be a super pain for the user)
 - title case for the name (need cases insensitive search, at least on titles)
 - Try to re-implement previous search option with the new design :
   - Case insensitive search (more usefull)
   - Regex search
   - sort-alphabetically
 - [Prefill with selection](https://blender.stackexchange.com/questions/106282/access-to-filter-name-property-with-python)
-- cleaner props : Put all scene properties in a property group
+- cleaner scene properties : Put all scene properties in a property group
 
 ### Ideas considered :
 - adding bookmark of search tag (editable) this can replace the prefix for a quick search
