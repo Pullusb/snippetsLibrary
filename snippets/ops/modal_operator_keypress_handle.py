@@ -25,20 +25,23 @@ def draw_callback_px(self, context):
     bgl.glDisable(bgl.GL_BLEND)
 
     ## text
-
     font_id = 0
-    ## show active modifier key
-    if self.pressed_alt or self.pressed_shift:
-        blf.position(font_id, self.mouse[0]+4, self.mouse[1]+4, 0)
-        blf.size(font_id, 15, 72)
+
+    ## Show active modifier key (not necessary if you need performance)
+    if self.pressed_alt or self.pressed_shift or self.pressed_ctrl:
+        # print(f'mods: alt {self.pressed_alt} - shift {self.pressed_shift} - ctrl {self.pressed_ctrl}')
+        blf.position(font_id, self.mouse[0]+10, self.mouse[1]+10, 0)
+        blf.size(font_id, 30, 72)#Id, Point size of the font, dots per inch value to use for drawing.
         if self.pressed_alt and self.pressed_shift:
             blf.draw(font_id, 'x')
         elif self.pressed_alt:
             blf.draw(font_id, '-')
-        elif self.pressed_alt:
+        elif self.pressed_shift:
             blf.draw(font_id, '+')
+        elif self.pressed_ctrl:
+            blf.draw(font_id, 'o')
 
-    ## draw text debug infos
+    ## Draw text debug infos
     blf.position(font_id, 15, 30, 0)
     blf.size(font_id, 20, 72)
     blf.draw(font_id, f'Infos - mouse coord: {self.mouse} - mouse_steps: {len(self.mouse_path)}')
@@ -56,11 +59,6 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
     pressed_ctrl = False
     pressed_shift = False
 
-    def modifier_key_state(self, modkeys, event):
-        if event.type in modkeys:
-            return event.value == 'PRESS'
-        return False
-
     def modal(self, context, event):
         context.area.tag_redraw()
 
@@ -70,18 +68,18 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
         ###  TESTER/
        
         ## Handle modifier keys state
-        if event.type in {'LEFT_SHIFT', 'RIGHT_SHIFT', 'LEFT_ALT', 'RIGHT_ALT', 'LEFT_CTRL', 'RIGHT_CTRL'}:
-            self.pressed_shift = self.modifier_key_state({'LEFT_SHIFT', 'RIGHT_SHIFT'}, event)
-            self.pressed_alt = self.modifier_key_state({'LEFT_ALT', 'RIGHT_ALT'}, event)
-            self.pressed_ctrl = self.modifier_key_state({'LEFT_CTRL', 'RIGHT_CTRL'}, event)
+        if event.type in {'LEFT_SHIFT', 'RIGHT_SHIFT'}: self.pressed_shift = event.value == 'PRESS'
+        if event.type in {'LEFT_CTRL', 'RIGHT_CTRL'}: self.pressed_ctrl = event.value == 'PRESS'
+        if event.type in {'LEFT_ALT', 'RIGHT_ALT'}: self.pressed_alt = event.value == 'PRESS'
 
+        ## Get mouse move
         if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
             # INBETWEEN : Mouse sub-moves when too fast and need precision to get higher resolution sample in coordinate.
 
-            ## store mouse position in a variable
+            ## Store mouse position in a variable
             self.mouse = (event.mouse_region_x, event.mouse_region_y)
             
-            ## store mouse path in a list (only if left click is pressed)
+            ## Store mouse path in a list (only if left click is pressed)
             if self.pressed_key == 'LEFTMOUSE':# This is evaluated as a continuous press
                 self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
 
@@ -91,7 +89,7 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
             ## While pushed, variable pressed stay on
             
             if event.value == 'RELEASE':
-                print('Released left click')#Dbg
+                # print('Action on release')#Dbg
 
                 #if release, stop continuous press and do the thing !
                 # Reset the key
@@ -110,10 +108,10 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
 
                 ## Do things according to modifier detected (on release here) Put combo longest key combo first
                 
-                if self.pressed_ctrl and self.pressed_alt and self.pressed_shift:# shift+alt combo operations
+                if self.pressed_ctrl and self.pressed_alt and self.pressed_shift:# 3 mods combo operations
                     print('Click released with alt + ctrl + shift')
 
-                if self.pressed_alt and self.pressed_shift:# shift+alt combo operations
+                if self.pressed_alt and self.pressed_shift:# shift+alt combo operations (add what necessary)
                     print('Click released with alt + shift')
 
                 elif self.pressed_shift:
@@ -130,10 +128,10 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
         
 
         if self.pressed_key == 'LEFTMOUSE':# using pressed_key variable
-            ## Code here is continuously triggered during continuous press
+            ## Code here is continuously triggered during press
             pass
-        
         ### CONTINUOUS PRESS/
+
 
         ## SINGLE PRESS
         if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
@@ -144,6 +142,7 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
             ## Can also finish on click (better do a dedicated exit func if duplicated with abort code)
             # bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             # return {'FINISHED'}
+
 
         ### KEYBOARD SINGLE PRESS
 
