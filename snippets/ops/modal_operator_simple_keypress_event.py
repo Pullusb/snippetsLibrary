@@ -1,57 +1,11 @@
-# Simple exemple of keypress handling in modal ops with detection of ctrl/alt/shift modifiers
+# Simple template of keypress event handling in modal ops with detection of ctrl/alt/shift modifiers
 import bpy
-import gpu
-import bgl
-import blf
-from gpu_extras.batch import batch_for_shader
-# from gpu_extras.presets import draw_circle_2d
-
-def draw_callback_px(self, context):
-    '''Draw callback use by modal to draw in viewport'''
-    ## lines and shaders
-    # 50% alpha, 2 pixel width line
-    shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')#initiate shader
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glLineWidth(2)
-
-    # Draw line showing mouse path
-    batch = batch_for_shader(shader, 'LINE_STRIP', {"pos": self.mouse_path})
-    shader.bind()
-    shader.uniform_float("color", (0.5, 0.5, 0.5, 0.5))#grey-light
-    batch.draw(shader)
-
-    # restore opengl defaults
-    bgl.glLineWidth(1)
-    bgl.glDisable(bgl.GL_BLEND)
-
-    ## text
-    font_id = 0
-
-    ## Show active modifier key (not necessary if you need performance)
-    if self.pressed_alt or self.pressed_shift or self.pressed_ctrl:
-        # print(f'mods: alt {self.pressed_alt} - shift {self.pressed_shift} - ctrl {self.pressed_ctrl}')
-        blf.position(font_id, self.mouse[0]+10, self.mouse[1]+10, 0)
-        blf.size(font_id, 30, 72)#Id, Point size of the font, dots per inch value to use for drawing.
-        if self.pressed_alt and self.pressed_shift:
-            blf.draw(font_id, 'x')
-        elif self.pressed_alt:
-            blf.draw(font_id, '-')
-        elif self.pressed_shift:
-            blf.draw(font_id, '+')
-        elif self.pressed_ctrl:
-            blf.draw(font_id, 'o')
-
-    ## Draw text debug infos
-    blf.position(font_id, 15, 30, 0)
-    blf.size(font_id, 20, 72)
-    blf.draw(font_id, f'Infos - mouse coord: {self.mouse} - mouse_steps: {len(self.mouse_path)}')
-
 
 class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
     """Handle keypress with modifier"""
     bl_idname = "view3d.template_keypress_handle"
     bl_label = "Modal keyboard and mouse template"
-    bl_description = "Use left click to do stuff with mofdifiers key, right click or Esc to abort"
+    bl_description = "Use left click to do stuff with modifiers key, right click or Esc to abort"
     bl_options = {"REGISTER", "UNDO"}
 
     pressed_key = 'NOTHING'
@@ -60,7 +14,6 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
     pressed_shift = False
 
     def modal(self, context, event):
-        context.area.tag_redraw()
 
         ### /TESTER - keycode printer (flood console but usefull to know a keycode name)
         # if event.type not in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:#avoid flood of mouse move.
@@ -73,16 +26,12 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
         if event.type in {'LEFT_ALT', 'RIGHT_ALT'}: self.pressed_alt = event.value == 'PRESS'
 
         ## Get mouse move
-        if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
-            # INBETWEEN : Mouse sub-moves when too fast and need precision to get higher resolution sample in coordinate.
+        # if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
+        #     # INBETWEEN : Mouse sub-moves when too fast and need precision to get higher resolution sample in coordinate.
+        #     ## Store mouse position in a local variable
+        #     mouse = (event.mouse_region_x, event.mouse_region_y)
 
-            ## Store mouse position in a variable
-            self.mouse = (event.mouse_region_x, event.mouse_region_y)
-            
-            ## Store mouse path in a list (only if left click is pressed)
-            if self.pressed_key == 'LEFTMOUSE':# This is evaluated as a continuous press
-                self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
-
+        '''
         ### /CONTINUOUS PRESS
         if event.type == 'LEFTMOUSE' :
             self.pressed_key = 'LEFTMOUSE'
@@ -108,21 +57,10 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
 
                 ## Do things according to modifier detected (on release here) Put combo longest key combo first
                 
-                if self.pressed_ctrl and self.pressed_alt and self.pressed_shift:# 3 mods combo operations
-                    print('Click released with alt + ctrl + shift')
-
                 if self.pressed_alt and self.pressed_shift:# shift+alt combo operations (add what necessary)
                     print('Click released with alt + shift')
-
                 elif self.pressed_shift:
-                    print('Click released with shift')    
-
-                elif self.pressed_alt:
-                    print('Click released with alt')
-                
-                elif self.pressed_ctrl:
-                    print('Click released with ctrl')
-
+                    print('Click released with shift')
                 else:
                     print('Click released')
         
@@ -131,18 +69,29 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
             ## Code here is continuously triggered during press
             pass
         ### CONTINUOUS PRESS/
+        '''
 
 
-        ## SINGLE PRESS
+        ## /SINGLE PRESS
         if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
-            if self.pressed_ctrl:
-                print('Ctrl + click')
+            if self.pressed_ctrl and self.pressed_shift:#combo
+                print('Ctrl + Shift + Click')
+            elif self.pressed_ctrl:
+                print('Ctrl + Click')
+            elif self.pressed_shift:
+                print('Shift + Click')
             else:
-                print('Click')
+                print('Click')#basic click
+
             ## Can also finish on click (better do a dedicated exit func if duplicated with abort code)
             # bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
             # return {'FINISHED'}
+        ## SINGLE PRESS/
 
+
+        ## TIMER
+        # if event.type == 'TIMER':
+        #     print('tick')
 
         ### KEYBOARD SINGLE PRESS
 
@@ -173,9 +122,6 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
             ## Remove timer (if there was any)
             # context.window_manager.event_timer_remove(self.draw_event)
             
-            ## Remove draw handler (if there was any)
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle, 'WINDOW')
-            
             print('STOPPED')#Dbg
             return {'CANCELLED'}
 
@@ -185,28 +131,19 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
     def invoke(self, context, event):
         print('\nSTARTED')#Dbg
         
-        ## Potential start checks (ex: stop if not in perspective view)
-        # if not context.area.spaces[0].region_3d.is_perspective:
-        #     self.report({'ERROR'}, "You are in Orthographic view (press 5 on your numpad to toggle perspective)")
+        ## Potential start checks (ex: stop if not in object mode)
+        # if context.mode != 'OBJECT':
+        #     self.report({'ERROR'}, "You muse be in object mode, abort")
         #     return {'CANCELLED'}
         
         ## Restrict to 3D view
         # if context.area.type != 'VIEW_3D':
         #     self.report({'WARNING'}, "View3D not found, cannot run operator")
         #     return {'CANCELLED'}
-
-        ## Add the region OpenGL drawing callback (only if drawing is needed)
-        ## draw in view space with 'POST_VIEW' and 'PRE_VIEW'
-        args = (self, context)
-        self._handle = bpy.types.SpaceView3D.draw_handler_add(draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
         
-        ## If a timer is needed during modal
+        ## If a timer is needed during modal - Time Step, Interval in seconds between timer events (float in [0, inf])
         # self.draw_event = context.window_manager.event_timer_add(0.1, window=context.window)
-        
-        ## initiate variable to use (ex: mouse coords)
-        self.mouse_path = [] # coordinate list of the mouse path
-        self.mouse = (0, 0) # updated tuple of mouse coordinate
-        
+
         ## Starts the modal
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
