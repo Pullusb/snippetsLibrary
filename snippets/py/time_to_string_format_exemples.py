@@ -1,6 +1,6 @@
 ## Execute to see a meta strftime documentation in console
 from time import strftime
-text = """\n## Time format string special character: exemple  - definiton ##
+text = """\n## Time format string special character: exemple  - description ##
 Exemples use execution time : %Y-%m-%d %H:%M:%S
 
 %%a: %a  - Locale’s abbreviated weekday name.
