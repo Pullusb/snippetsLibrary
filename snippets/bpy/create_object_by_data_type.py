@@ -7,14 +7,6 @@ import bpy
 ob_data = bpy.data.meshes.new("mesh_data_name")
 ob_name = 'My_Mesh'
 
-## text (font is a curve objects)
-ob_data = bpy.data.curves.new("text_data_name", "FONT")# ('CURVE', 'SURFACE', 'FONT')
-ob_name = 'My_Text'
-
-## light
-ob_data = bpy.data.lights.new("light_data_name", "POINT")# ('POINT', 'SUN', 'SPOT', 'AREA')
-ob_name = 'My_Light'
-
 ## curve
 ob_data = bpy.data.curves.new("curve_data_name", "CURVE")
 ob_name = 'My_Curve'
@@ -30,6 +22,18 @@ ob_name = 'My_Metaball'
 ## grease pencil
 ob_data = bpy.data.grease_pencils.new("GP_data_name")
 ob_name = 'My_GP'
+
+## text (font is a curve objects)
+ob_data = bpy.data.curves.new("text_data_name", "FONT")# ('CURVE', 'SURFACE', 'FONT')
+ob_name = 'My_Text'
+
+## light
+ob_data = bpy.data.lights.new("light_data_name", "POINT")# ('POINT', 'SUN', 'SPOT', 'AREA')
+ob_name = 'My_Light'
+
+## camera
+ob_data = bpy.data.cameras.new("cam_data_name")
+ob_name = 'My_Cam'
 
 ## empty
 ob_data = None
