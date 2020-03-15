@@ -13,14 +13,15 @@ Want to support me? [Check out how](http://www.samuelbernou.fr/donate)
 
 ## Description
 
-Allow you use and manage a library of your own code snippets.
-Works in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier
+Allow you use and manage a library of your own code snippets.  
+Works well in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier.  
 
-A new _Snippets_ tab will be in the text editor's toolbar (accessible with `ctrl + T`).
-Snippets will be saved and stored as invidual plain text files in a folder named 'snippets'.
-This folder is located by default alongside the addon files (unless you enter a custom path in addon preferences).
-Blender buit-in snippets are also scanned (you can disable it in addon pref).
-The addon is shipped with my personal pack of usefull code snippets (all GPL, once installed just click the reload button in the addon UI to diplay them)
+A new _Snippets_ tab will be in the text editor's toolbar (accessible with `ctrl + T`).  
+Snippets will be saved and stored as invidual plain text files in a folder named 'snippets'.  
+This folder is located by default alongside the addon files (unless you enter a custom path in addon preferences).  
+Blender build-in snippets are also scanned (you can disable it in addon pref).  
+The addon is shipped with my personal pack of usefull code snippets (all free to use)  
+once installed just click the reload button in the addon UI to diplay them)
 
 
 ## Features
@@ -34,17 +35,18 @@ Here description of the button list in order they appear.
 
 **Insert new** : Place the snippet in a new text (named after the snippet)
 
-**Reload** : Load/Reload the list of snippet's from library. It load only '.txt' or '.py' files
+**Reload** : Load/Reload the list of snippet's from library. It load only '.txt' or '.py' files  
+Shift + click on Reload clear the list off the blend file (save space when your done)
 
 <!-- **Search** : Searching in content and title of the library (This will reload filtering only matching element). Hit the Reload button to get back to full list.
 if you have some text selected in the editor the searchfield will be pre-filled with it (if selection is not multiline). -->
 
 **Arrows up/down** : Just change current snippet.
 
-**Add** : Create a new snippet in library from current text selection (pop up a windows).
-Snippets are saved as standalone '.py' file in the library folder.
-Once saved you can open the library (click the icon folder) and arrange your newly created snippets into a suiting category folder (creating folder and subfolder is OK).
-Thus it's not necessary, the containing folder name will be important if you use the `conversion` feature (see below).
+**Add** : Create a new snippet in library from current text selection (pop up a windows).  
+Snippets are saved as standalone '.py' file in the library folder.  
+Once saved you can open the library (click the icon folder) and arrange your newly created snippets into a suiting category folder (creating folder and subfolder is OK).  
+Thus it's not necessary, the containing folder name will be important if you use the `conversion` feature (see below).  
 <!-- at the moment of save the snippet format can be changed from .txt (default) to .py format. The default format can be changed in the addon preference.
 It's completely up to you. Preferably use '.py' when the code can run as a standalone script
 Thought it's not mandatory, it is better to add a prefix (e.g: `obj_`) to the name. Try to keep it a very short word that represent a related category, think of it as a tag.
@@ -77,24 +79,23 @@ For example, this prove's usefull when multiple user work on a same server to sh
 
 **Conversion** : Enjoy your blender made snippets in your favorite IDE !
 This buttons allow you to convert all your library to the format of external editors Sublime text, VScode or atom.
-The trigger word to call it will be the name of the snippet's containing folder with an heading '`s`' added. (This is meant to avoid having triggers with standard words)
+The trigger word to call it will be the name of the snippet's containing folder with an heading '`s`' added. (This is meant to avoid having triggers with standard words)  
 example: if the snippets was in the folder `bpy`, in sublime text you would start tapping `sbpy` to see suggestions of all related snippets.
 Note for Atom users: Since multiple snippets can share the same prefix, the conversion use [this hack to make it work](https://github.com/medienbaecker/kirby-snippets/issues/1#issue-172641340).
 
-Note : You can enter tabstop syntax in your snippets. This will not affect your use of it in blender.
+Note : You can enter tabstop syntax in your snippets. This will not affect your use of it in blender.  
 It can be usefull after conversion on external editors (see Conversion above)
 ![tabstop](https://github.com/Pullusb/images_repo/raw/master/Bl_snippetLib_Tabstop.png)
 
 
-Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
+Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks  
 
 ---
 
 
 ## Todo:
-- Cleanning function : Clear memory button (snippets stay in blend files when load)
   - Think a way of auto cleaning... complex (maybe have a preference to auto-clean on save. But can be a super pain for the user)
-- title case for the name (need cases insensitive search, at least on titles)
+- title case for the name (but need cases insensitive search, at least on titles before)
 - Try to re-implement previous search option with the new design :
   - Case insensitive search (more usefull)
   - Regex search
@@ -116,6 +117,11 @@ or just an enum/list of the current folders to choose what to scan
 ---
 
 ## Changelog:
+
+  v0.5.0 :
+  - Cleanning function : Clear memory button (snippets stay in blend files when load)
+  - clear operation when shift+click on reload button to save space
+  - Fix typos
 
   v0.4.6 :
   - Fix possible encoding error (load files with option encoding='utf-8')

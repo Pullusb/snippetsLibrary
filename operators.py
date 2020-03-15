@@ -61,7 +61,7 @@ class SNIPPETSLIB_UL_items(UIList):
     #                                                 description="Reverse name filtering")
 
     filter_content : BoolProperty(name="Filter content", default=True, options=set(),
-                                                    description="Search in content isntead of title")
+                                                    description="Search in all snippets contents instead of titles")
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index, flt_flag):        
         self.use_filter_show = True#force open the search feature
@@ -481,23 +481,33 @@ def reload_snippets():
     else:
         return (1)
 
-
-# relaod button
+# reload button
 class SNIPPETSLIB_OT_reloadItems(Operator):
     bl_idname = "sniptool.reload_list"
     bl_label = "Reload List"
-    bl_description = "Reload snippets list from disk"
+    bl_description = "Load/reload snippets list from disk\nshift+click to clear list (save space in blend file)"
     # bl_options = {'REGISTER', 'INTERNAL'}
 
+    clear : BoolProperty(default=False)
+
     def execute(self, context):
+        if self.clear:
+            bpy.context.scene.sniptool.clear()
+            bpy.context.scene.sniptool_preview = ''       
+            bpy.context.scene.sniptool_preview_defs = ''
+            return {'FINISHED'}
+        
         error = reload_snippets()
         if error:
             pathErrorMsg = get_main_lib_path() + ' not found or inaccessible'
             self.report({'ERROR'}, pathErrorMsg)
             return{'CANCELLED'}
 
-        return{'FINISHED'}
+        return {'FINISHED'}
 
+    def invoke(self, context, event):
+        self.clear = event.shift#if shift is pressed, clear instead of reloading
+        return self.execute(context)
 
 # search inside the content, "reload" the list with only compatible snippets
 class SNIPPETSLIB_OT_searchItems(Operator):
