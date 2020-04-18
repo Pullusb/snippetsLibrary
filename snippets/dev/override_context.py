@@ -1,15 +1,15 @@
-# Context overrides with various methods (might be outdated, made for 2.79)
-def get_3dview_override:
+## Context overrides with various methods
+def get_3dview_override():
   for window in bpy.context.window_manager.windows:
       screen = window.screen
-
       for area in screen.areas:
           if area.type == 'VIEW_3D':
               for region in area.regions:
                   if region.type == 'WINDOW':
-                      override = {'window': window, 'screen': screen, 'area': area, 'region': region}
-                      #can simply do operator here
-                      break
+                      return {'window': window, 'screen': screen, 'area': area, 'region': region}
+                      ## Can do operator here instead of return (to make if in all view instead of first found)
+                      # bpy.ops. ...
+                      # break# break go to next view if any
 
 override = get_3dview_override()
 if override:
@@ -20,14 +20,15 @@ if override:
     bpy.ops.view3d.zoom(override, delta=-5, mx=0, my=0)
     #bpy.ops.mesh.loopcut(override, number_cuts=...,)#<<not working
 
-#Find_3D_view_Pannel_options:
+
+## Find_3D_view_Pannel_options (2.7):
 for area in bpy.context.screen.areas:
     if area.type == 'VIEW_3D':
         area.spaces[0].use_matcap = True
         area.spaces[0].show_only_render = True
         area.spaces[0].matcap_icon = '12'
 
-#access BG images
+## access BG images (2.7 ?)
 for area in bpy.context.screen.areas:
     if area.type == 'VIEW_3D':
         space_data = area.spaces.active
@@ -35,7 +36,7 @@ for area in bpy.context.screen.areas:
         bg.image = img
         break
 
-#texteditor_override
+## texteditor_override
 def get_text_override():
     # for finding text area
     win      = bpy.context.window
@@ -58,7 +59,7 @@ if override:
     bpy.ops.text.scroll(lines=1)
 
 
-#point_cache_override
+## point_cache_override
 def get_cloth_override():
     for scene in bpy.data.scenes:
         for object in scene.objects:
@@ -70,11 +71,12 @@ def get_cloth_override():
                     # bpy.ops.ptcache.bake(override, bake=True)
                     # break
 
-##Or shorter version:
+## Or shorter version:
 # a = {}
 # a['point_cache'] = bpy.data.objects['Cube'].particle_systems['ParticleSystem'].point_cache
 # bpy.ops.ptcache.bake_from_cache(a)
 
+## Cloth overrides
 override = get_cloth_override()
 if override:
     #free bake from previous cache

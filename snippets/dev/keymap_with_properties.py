@@ -30,6 +30,8 @@ def unregister_keymaps():
     for km in addon_keymaps:
         for kmi in km.keymap_items:
             km.keymap_items.remove(kmi)
+        ## Can't (and supposedly shouldn't ) suppress original category name...
+        # wm.keyconfigs.addon.keymaps.remove(km)
     addon_keymaps.clear()
 
 def register():
