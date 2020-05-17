@@ -15,6 +15,10 @@ ob_name = 'My_Curve'
 ob_data = bpy.data.curves.new("surface_data_name", "SURFACE")
 ob_name = 'My_Nurbs_surface'
 
+## lattices 
+ob_data = bpy.data.lattices.new('lattice_data_name')
+ob_name = 'My_Lattice'
+
 ## metaball
 ob_data = bpy.data.metaballs.new("metaball_data_name")
 ob_name = 'My_Metaball'
