@@ -113,7 +113,7 @@ class TEMPLATE_OT_keypress_handle(bpy.types.Operator):
                 print('D was pressed')
 
         # Valid
-        if event.type in {'ENTER', 'SPACE'}:
+        if event.type in {'RET', 'SPACE'}:
             print('DONE')#Dbg
             return {'FINISHED'}
         
