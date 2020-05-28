@@ -1,11 +1,11 @@
-## check image sequences for corrupted images
+## Check image sequences for corrupted images (V2 2020-05-28)
 # import bpy
 from time import time
 from PIL.Image import *
 import os
 from os.path import join, dirname, abspath, basename, splitext
 
-
+# allowed extension to be considered as images
 image_exts = ('.png', '.jpg', '.tiff', '.tga', '.jpeg',)
 
 def is_img_folder(d):
@@ -41,6 +41,7 @@ def check_passes_in_folder(folder, full_report=False, root=None, limit=80):
     limit:: allowed percentage of image full black/white/transparent, report if more than this percentage
     return a tuple (error code -> int, details -> str)
     '''
+
     print("check dir :", basename(folder), '->' , folder)
     path_str = folder
     if root:
@@ -112,9 +113,7 @@ def check_passes_in_folder(folder, full_report=False, root=None, limit=80):
 
 
 def check_imgs_seqs(src, print_relative=True):
-    '''
-    Perform multiple imgs sequence check recursively in passed filepath
-    '''
+    '''Perform multiple imgs sequence check recursively in passed filepath'''
     t0 = time()
     empty_folders = []
     errors=[]
@@ -170,11 +169,8 @@ def check_imgs_seqs(src, print_relative=True):
     
 
 
-
+### LAUNCH CHECK
 print ('\n---')
-
-# TODO : compare total frame number
-# total_frames = bpy.context.scene.frame_end - bpy.context.scene.frame_start
 
 ## starts check in render folder aside blend file
 #fp = join(dirname(abspath(bpy.path.abspath(bpy.data.filepath))), 'render')
@@ -182,7 +178,7 @@ print ('\n---')
 ## starts check in folder containing the blend
 #fp = dirname(abspath(bpy.path.abspath(bpy.data.filepath)))
 
-fp = r'G:\WORKS\PRO\Work\ADM\RDN\library\shots\S05_P09\S05_P09_CO_2020_05_03\S05_P09_PNG'
+fp = r''
 check_imgs_seqs(fp)
 
 # tips: print filepaths relative to loacal folder  : fp[len(dirname(bpy.data.filepath)):] #slice path until local folder

@@ -1,4 +1,4 @@
-## functions to check for full black/white/alpha images with PIL
+## functions to check for full black/white/alpha images with PIL v1
 # import bpy
 import os
 from os.path import *
