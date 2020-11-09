@@ -1,7 +1,9 @@
 class myaddonPrefs(bpy.types.AddonPreferences):
-    bl_idname = __name__
-    #some_bool_prop to display in the addon pref
+    ## can be just __name__ if prefs are in the __init__ mainfile
+    # Else need the splitext '__name__ = addonname.subfile' (or use a static name)
+    bl_idname = __name__.split('.')[0]# or with: os.path.splitext(__name__)[0]
 
+    # some_bool_prop to display in the addon pref
     super_special_option : bpy.props.BoolProperty(
         name='Use super special option',
         description="This checkbox toggle the use of the super special options",
