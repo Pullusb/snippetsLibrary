@@ -118,6 +118,10 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
 
+  v0.5.1 :
+  - added tracker url
+  - new snippets
+
   v0.5.0 :
   - Cleanning function : Clear memory button (snippets stay in blend files when load)
   - clear operation when shift+click on reload button to save space

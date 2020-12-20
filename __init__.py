@@ -22,11 +22,12 @@ bl_info = {
     "name": "snippets library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 5, 0),
+    "version": (0, 5, 1),
     "blender": (2, 80, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
-    "wiki_url": "https://github.com/Pullusb/snippetsLibrary",
+    "doc_url": "https://github.com/Pullusb/snippetsLibrary",
+    "tracker_url": "https://github.com/Pullusb/snippetsLibrary/issues",
     "category": "Text Editor" }
 
 
