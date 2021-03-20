@@ -1,5 +1,5 @@
 # snippetsLibrary
-Blender addon - personnal snippets library in text editor
+Blender addon - personal snippets library in text editor
 
 **[Download latest](https://github.com/Pullusb/snippetsLibrary/archive/master.zip)**
 
@@ -107,7 +107,7 @@ Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks
 - adding bookmark of search tag (editable) this can replace the prefix for a quick search
 or just an enum/list of the current folders to choose what to scan
 - Edit selected: Add an edit button that open the snippet from disk so it can be edited quickly
-- Find a way to resolve eventual conflict (different file with same name) -> example, pop up a windows with infos display and button to do action on name who have ultiple entry.
+- Find a way to resolve eventual conflict (different file with same name) -> example, pop up a windows with infos display and button to do action on name who have multiple entry.
 - Maybe avoid scan doubles.
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
 - quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
