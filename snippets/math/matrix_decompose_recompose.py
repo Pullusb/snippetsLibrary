@@ -2,7 +2,7 @@
 import bpy
 from mathutils import Matrix
 
-def get_scale_matrix(scale):
+def scale_matrix_from_vector(scale):
     # recreate a neutral mat scale
     matscale_x = Matrix.Scale(scale[0], 4,(1,0,0))
     matscale_y = Matrix.Scale(scale[1], 4,(0,1,0))
@@ -18,7 +18,7 @@ loc, rot, scale = mat.decompose()
 # compose
 loc_mat = Matrix.Translation(loc)
 rot_mat = rot.to_matrix().to_4x4()
-scale_mat = get_scale_matrix(scale)
+scale_mat = scale_matrix_from_vector(scale)
 
 new_mat = loc_mat @ rot_mat @ scale_mat
 
