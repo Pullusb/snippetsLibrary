@@ -118,6 +118,10 @@ or just an enum/list of the current folders to choose what to scan
 
 ## Changelog:
 
+  v0.5.4 :
+  - feat: on linux shift+clic on the open folder button will also select the file in opened directory
+  - new snippets
+
   v0.5.1 :
   - added tracker url
   - new snippets
