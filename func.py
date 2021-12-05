@@ -6,6 +6,7 @@ import time
 import unicodedata
 from os.path import dirname, basename, splitext, exists, join, realpath, abspath, isfile, isdir, normpath
 from shutil import which
+from pathlib import Path
 
 
 def get_addon_prefs():
@@ -304,7 +305,7 @@ def get_main_lib_path():
     if cust_path and cust_fp:#specified user location
         mainDir = bpy.path.abspath(cust_fp)
  
-    else:#default location (addon folders "snippets" subdir)
+    else: # default location (addon folders "snippets" subdir)
         script_file = os.path.realpath(__file__)
         directory = dirname(script_file)
         mainDir = join(directory, 'snippets/')
@@ -358,8 +359,10 @@ def locateLibrary(single=False):
                 print(f'Path not valid {loc.name} ({locpath})')
 
     if prefs.snippets_use_standard_template:
-        altDir.extend(bpy.utils.script_paths("templates_py"))
-        altDir.extend(bpy.utils.script_paths("templates_osl"))
+        # altDir.extend(bpy.utils.script_paths("templates_py")) # blender < 3.0.0
+        # altDir.extend(bpy.utils.script_paths("templates_osl")) # blender < 3.0.0
+        altDir.append(str(Path(bpy.utils.resource_path('LOCAL')) / 'scripts' / "templates_py"))
+        altDir.append(str(Path(bpy.utils.resource_path('LOCAL')) / 'scripts' / "templates_osl"))
     
     for l in maindirlist + altDir:
         print('checking: ', l)
