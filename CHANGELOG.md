@@ -1,6 +1,6 @@
 ## Changelog:
 
-0.5.5
+0.5.5 - 2021-12-05
 
 - fix: blender 3.0.0 api changes # get native template
 
