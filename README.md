@@ -7,7 +7,7 @@ Looking for the blender 2.7 version ? [go to this repo](https://github.com/Pullu
 
 ### [Demo Youtube](https://youtu.be/Rs4y7DeHkp8)
 
-Want to support me? [Check out how](http://www.samuelbernou.fr/donate)
+Want to support me? Get something from [my gumroad](https://pullusb.gumroad.com/), [blender market](https://blendermarket.com/creators/pullup), or see [other means](http://www.samuelbernou.fr/donate)
 
 ---  
 
