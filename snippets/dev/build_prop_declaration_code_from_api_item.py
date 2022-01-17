@@ -1,5 +1,6 @@
 ## Build properties declaration code : generate properties code from api items
 ## Some properies are still not completely supported (Vector prop for example)
+## v1.2
 
 import bpy
 
@@ -24,7 +25,7 @@ def get_enum_code_from_rna_prop(prop):
     '''
     return prop_str
 
-def get_prop_code(prop):
+def get_prop_code(prop, exclude_default=True):
     '''Get api item's rna_type.properties to build code'''
 
     if prop.rna_type.identifier == 'EnumProperty':
@@ -41,11 +42,29 @@ def get_prop_code(prop):
         if subattr.identifier.strip() in exclude:
             continue
 
-        ## quote strings
         val = str(getattr(prop, subattr.identifier))
-        val = f"'{val}'" if subattr.type == 'STRING' else val
-        if val == 'NONE':
+        
+        if subattr.type == 'STRING' and val == 'NONE':
             continue
+
+        ## ignore values (problem: not sure of what are the true default values)
+        ## does not gie real default : subattr.rna_type.properties['default'].default
+
+        if exclude_default:
+            # note: val is str at this point
+            if subattr.type == 'INT':
+                print('subattr.identifier: ', subattr.identifier)
+                if subattr.identifier == 'step' and val == '1': continue
+                # if subattr.identifier in ('hard_min', 'soft_min') and val == 0: continue
+                # if subattr.identifier in ('hard_max','soft_max') and val == 1048574: continue 
+            if subattr.type == 'FLOAT':
+                # if subattr.identifier in ('hard_min', 'soft_min') and val == 0.0: continue
+                if subattr.identifier in ('hard_max','soft_max') and val == '3.4028234663852886e+38': continue
+                if subattr.identifier == 'step' and val == '3': continue
+
+        ## quote strings
+        val = f"'{val}'" if subattr.type == 'STRING' else val
+
         all_prop_attrs += f'    {subattr.identifier}={val},\n'
 
     prop_string = f'''
