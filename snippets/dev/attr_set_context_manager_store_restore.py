@@ -1,19 +1,19 @@
 ## context manager to store restore
 
 class attr_set():
-    '''Receive a list of tuple [(data_path:python_obj, "attribute":str, "wanted value":str)]
-    before with statement : Store existing values, assign wanted value 
-    after with statement: Restore values to their old values
+    '''Receive a list of tuple [(data_path, "attribute" [, wanted value)] ]
+    entering with-statement : Store existing values, assign wanted value (if any)
+    exiting with-statement: Restore values to their old values
     '''
 
     def __init__(self, attrib_list):
         self.store = []
-        for prop, attr, new_val in attrib_list:
+        # item = (prop, attr, [new_val])
+        for item in attrib_list:
+            prop, attr = item[:2]
             self.store.append( (prop, attr, getattr(prop, attr)) )
-            # if new_val == '_undefined':
-            #     # set new_val to '_undefined' if need to store / restore only
-            #     continue
-            setattr(prop, attr, new_val)
+            if len(item) >= 3:
+                setattr(prop, attr, item[2])
 
     def __enter__(self):
         return self
