@@ -9,6 +9,7 @@ for ac in bpy.data.actions:
     for fc in reversed(ac.fcurves):
         if fc.data_path in fcurve_path:
             print(f'removing hide_render from action: {ac.name}')
+            ac.fcurves.remove(fc)
 
 ## remove on scene objects only (restore visibility)
 for ob in bpy.context.scene.objects:
