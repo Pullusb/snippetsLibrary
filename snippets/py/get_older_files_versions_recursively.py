@@ -23,9 +23,10 @@ def get_old_version(root, pattern=r'_v\d{3}\.\w+', exclude=None, keep=1, verbose
     if exclude is None:
         all_items = [f for f in os.scandir(root)]
     else:
-        all_items = [f for f in os.scandir(root) if not is_exclude(f.path, exclude)]
+        all_items = [f for f in os.scandir(root) if not is_exclude(f.name, exclude)]
 
     allfiles = [f for f in all_items if f.is_file()]
+    allfiles.sort(key=lambda x: x.name)
     dirs = [f for f in all_items if f.is_dir()]
 
     for i in range(len(allfiles)-1,-1,-1):# fastest way to iterate on index in reverse
