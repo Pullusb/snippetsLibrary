@@ -1,3 +1,5 @@
+## create camera and fit on list of objects
+
 import bpy
 from mathutils import Vector
 from math import pi
@@ -21,7 +23,6 @@ scn.render.resolution_x = scn.render.resolution_y = 1000
 
 ## --- Method OPS: precisely fit objects, (not working on armatures)
 
-## Make camera move to frame selected objects
 def cam_view_selection(cam = bpy.context.scene.camera):
     '''Move given camera to frame selected objects with Ops viewSelect method'''
     #set active camera
@@ -36,15 +37,10 @@ def cam_view_selection(cam = bpy.context.scene.camera):
             bpy.ops.view3d.camera_to_view_selected(ctx)   # points camera
 
 # frame_object
-cam_data.lens += 5 # back to original lens after to add a margin
+cam.data.lens += 5 # back to original lens after to add a margin
 bpy.ops.object.select_all(action='SELECT') # frame everything
 cam_view_selection(cam=cam)
-cam_data.lens -= 5
-
-## also possible to physically move camera back intead of 
-# up = Vector((0,0,1))
-# up.rotate(cam.matrix_world)
-# cam.location += up * 0.2
+cam.data.lens -= 5
 
 
 ## --- Method Cam fitting: worlks with armatures, but less precise (fit on bounding box)
@@ -69,3 +65,9 @@ cam = scn.camera
 cam.data.lens += 3 # margin hack
 cam_fit(cam, flatten_coords)
 cam.data.lens -= 3 # margin hack
+
+
+## also possible to physically move camera back
+# up = Vector((0,0,1))
+# up.rotate(cam.matrix_world)
+# cam.location += up * 0.2
