@@ -19,11 +19,11 @@ Created by Samuel Bernou
 '''
 
 bl_info = {
-    "name": "snippets library",
+    "name": "Snippets Library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 5, 5),
-    "blender": (2, 80, 0),
+    "version": (0, 5, 6),
+    "blender": (3, 0, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
     "doc_url": "https://github.com/Pullusb/snippetsLibrary",
@@ -116,11 +116,11 @@ class snippetsPreferences(bpy.types.AddonPreferences):
 
     snippets_preview_line_number : bpy.props.IntProperty(
         name='Max preview lines',
-        description="Choose number of lines to display on a snippet preview (default=10)",
+        description="Choose number of lines to display on a snippet preview (default=25)",
         min=1,
         soft_max=500,
         max=2000,
-        default=10)
+        default=25)
 
     snippets_show_line_numbers : bpy.props.BoolProperty(
         name='Show line numbers',

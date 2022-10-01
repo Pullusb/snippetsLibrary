@@ -194,18 +194,19 @@ class SNIPPETSLIB_PT_uiList(Panel):
         # Preview zone
         # row.prop(scn, 'sniptool_preview_use', text='Preview', icon=prev_icon)#fat button with preview
         if bpy.context.scene.sniptool_preview_use:
-            if bpy.context.scene.sniptool_preview:
-                box = layout.box()
-                col = box.column(align=True)
-                for l in bpy.context.scene.sniptool_preview.split('\n'):
-                    col.label(text=l)
-            
             # def scan box 
             if bpy.context.scene.sniptool_preview_defs:
                 box = layout.box()
                 col = box.column(align=True)
                 for l in bpy.context.scene.sniptool_preview_defs.split('\n'):
                     col.label(text=l)
+
+            if bpy.context.scene.sniptool_preview:
+                box = layout.box()
+                col = box.column(align=True)
+                for l in bpy.context.scene.sniptool_preview.split('\n'):
+                    col.label(text=l)
+            
 
 
 # -------------------------------------------------------------------

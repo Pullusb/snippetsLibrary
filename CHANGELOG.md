@@ -1,4 +1,9 @@
-## Changelog:
+## Changelog
+
+0.5.6 - 2022-10-01
+
+- changed: default preview line display 10 > 25
+- changed: preview function/classes above content preview
 
 0.5.5 - 2021-12-05
 
