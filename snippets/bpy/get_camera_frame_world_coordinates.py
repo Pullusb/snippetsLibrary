@@ -10,7 +10,7 @@ def get_cam_frame_world(cam, scene=None):
     scene = scene or bpy.context.scene
 
     # Without scene passed, base on square
-    frame = cam.data.view_frame(scene)
+    frame = cam.data.view_frame(scene=scene)
     mat = cam.matrix_world
     frame = [mat @ v for v in frame]
     #-# Get center
