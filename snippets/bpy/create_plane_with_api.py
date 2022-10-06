@@ -22,7 +22,7 @@ def create_plane_bmesh(name='Plane'):
     bm.to_mesh(mesh)
     return obj
 
-def create_plane():
+def create_default_plane():
     '''Create a plane using pydata'''
     x = 1.0
     y = 1.0
@@ -35,5 +35,23 @@ def create_plane():
     col = bpy.context.collection
     col.objects.link(pl_obj)
 
+def create_meshplane_from_coordinates(coords, name):
+    '''Create an a mesh plane from passed coordinate
+    with a defaut UVmap
+    coords (list): list of four coordinate
+    name (str): mesh and obj with.
+    
+    return plane object
+    '''
+    fac = [(0, 1, 3, 2)]
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(coords, [], fac)
+    plane = bpy.data.objects.new(name, me)
+    # col = bpy.context.collection
+    # col.objects.link(plane)
+    me.uv_layers.new(name='UVMap')
+    return plane
+
 #create_plane()
 #create_plane_bmesh()
+#create_plane_from_coordinates(coord_list, plane_name)
