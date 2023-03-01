@@ -47,12 +47,12 @@ item = bpy.context.object
 # item = bpy.context.active_pose_bone
 
 ## Test per channel
-has_channel_key_at_frame(item, channel='location', verbose=True)
-has_channel_key_at_frame(item, channel='rotation_euler', verbose=True)
-has_channel_key_at_frame(item, channel='scale', verbose=True)
+has_key_at_frame(item, channel='location', verbose=True)
+has_key_at_frame(item, channel='rotation_euler', verbose=True)
+has_key_at_frame(item, channel='scale', verbose=True)
 
 ## multiple channels loop
 # for chan in ('location', 'rotation_euler', 'scale'):
-#     if has_channel_key_at_frame(item, channel=chan):
+#     if has_key_at_frame(item, channel=chan):
 #         ## ex: insert a key only if there is a keyframe already
 #         item.keyframe_insert(chan)
