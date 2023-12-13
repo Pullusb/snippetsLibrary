@@ -22,7 +22,7 @@ bl_info = {
     "name": "Snippets Library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 5, 6),
+    "version": (0, 6, 0),
     "blender": (3, 0, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",

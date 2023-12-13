@@ -1,5 +1,10 @@
 ## Changelog
 
+0.6.0 - 2023-12-13
+
+- fixed: api changes for Blender 4.0.0
+- added: lots of snippets since last version
+
 0.5.6 - 2022-10-01
 
 - changed: default preview line display 10 > 25

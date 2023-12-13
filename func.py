@@ -31,7 +31,11 @@ def path_to_display_name(fp):
     return splitext(basename(fp))[0].replace('_', ' ')#display name
 
 def insert_template(override, src_text):
-    bpy.ops.text.insert(override, text=src_text)
+    if bpy.app.version < (4,0,0):
+        bpy.ops.text.insert(override, text=src_text)
+    else:
+        with bpy.context.temp_override(**override):
+            bpy.ops.text.insert(text=src_text)
 
 def scan_folder(fp):
     '''take a filepath (location of the files) and return a list of filenames'''

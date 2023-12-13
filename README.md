@@ -90,6 +90,7 @@ It can be usefull after conversion on external editors (see Conversion above)
 
 Thanks to [tin2tin](https://github.com/tin2tin) for the feedbacks  
 
+<!-- 
 ---
 
 
@@ -111,4 +112,4 @@ or just an enum/list of the current folders to choose what to scan
 - Maybe avoid scan doubles.
 - TabTrigger : use the tabstop syntax on snippets to jump the cursor after insertion in blender. (Very hard to implement...)
 - quick insert : Double click to insert (with UIlist only an ugly modal on each clic or and operator in list but operator force center the text...)
-- online lib : Make some sort of repo where every user can pull-push snippets...(super difficult)
+- online lib : Make some sort of repo where every user can pull-push snippets...(super difficult) -->
