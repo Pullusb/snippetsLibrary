@@ -1,4 +1,7 @@
 ## Refresh interface on all areas
-def refresh_viewports():
+
+import bpy
+
+def refresh_areas():
     for area in bpy.context.screen.areas:
         area.tag_redraw()
