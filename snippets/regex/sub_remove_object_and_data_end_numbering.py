@@ -25,7 +25,7 @@ def rename_data(ob):
         return
 
     # else just try to rmeove number in name
-    new = re.sub(r'(.\d{3})$', '', dt.name)
+    new = re.sub(r'\.\d{3}$', '', dt.name)
     if dt.name != new:
         if not new in datagroup:
             print(f'{dt.rna_type.identifier} data: {dt.name} >> {new}')
@@ -42,7 +42,7 @@ def remove_end_numbering(ob, data_rename=True, skip_multi_user_objs=False):
         #     rename_data(ob)
         return
 
-    new = re.sub(r'(.\d{3})$', '', ob.name)    
+    new = re.sub(r'\.\d{3}$', '', ob.name)    
     if ob.name != new and not new in bpy.context.scene.objects:
         print(f'{ob.name} >> {new}')
         ob.name = new
