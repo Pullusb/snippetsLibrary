@@ -1,3 +1,5 @@
+## Pass a collection and return viewlayer collection
+
 def get_view_layer_col(col, vl_col=None):
     '''return viewlayer collection from collection'''
     if vl_col is None:
@@ -6,4 +8,6 @@ def get_view_layer_col(col, vl_col=None):
         if sub.collection == col:
             return sub
         if len(sub.children):
-            return get_view_layer_col(col, sub)
+            c = get_view_layer_col(col, sub)
+            if c is not None:
+                return c
