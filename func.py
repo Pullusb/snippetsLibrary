@@ -10,10 +10,7 @@ from pathlib import Path
 
 
 def get_addon_prefs():
-    addon_name = splitext(__name__)[0]
-    preferences = bpy.context.preferences
-    addon_prefs = preferences.addons[addon_name].preferences
-    return (addon_prefs)
+    return bpy.context.preferences.addons[__package__].preferences
 
 def scan_definitions(text):
     '''

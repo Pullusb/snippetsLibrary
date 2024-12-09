@@ -22,7 +22,7 @@ bl_info = {
     "name": "Snippets Library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 6, 0),
+    "version": (0, 6, 1),
     "blender": (3, 0, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -44,8 +44,8 @@ from .operators import *
 from .converter import *
 from .func import *
 
-importlib.reload(developer_utils)
-modules = developer_utils.setup_addon_modules(__path__, __name__, "bpy" in locals())
+# importlib.reload(developer_utils)
+# modules = developer_utils.setup_addon_modules(__path__, __package__, "bpy" in locals())
 
 
 ### addon preferences panel
@@ -103,7 +103,8 @@ class SNIPPETSLIB_UL_libpath(UIList):
 
 
 class snippetsPreferences(bpy.types.AddonPreferences):
-    bl_idname = __name__
+    bl_idname = __package__
+
     snippets_use_custom_path : bpy.props.BoolProperty(
         name='Use custom path',
         description="Set a cutom directory for snippets library",
@@ -193,27 +194,27 @@ class snippetsPreferences(bpy.types.AddonPreferences):
 
         ### main path (default or custom)
         layout.label(text='Library path')
-
-        layout.label(text='Main library:')
-        layout.prop(self, "snippets_use_custom_path")
+        col = layout.column(align=False)
+        col.label(text='Main library:')
+        col.prop(self, "snippets_use_custom_path")
         if self.snippets_use_custom_path:
             #layout.label(text="Leave the field empty to get default location")#"Custom path to you text load/save folder\n"
-            layout.prop(self, "snippets_filepath")
-            layout.label(text="May not work if space are in path.")
+            col.prop(self, "snippets_filepath")
+            col.label(text="May not work if space are in path.")
 
         ### secondary sources
-        layout.label(text='Additional sources:')
-        # layout.label(text='use default template')
-        layout.prop(self, "snippets_use_standard_template")
+        col = layout.column(align=False)
+        col.label(text='Additional sources:')
+        # col.label(text='use default template')
+        col.prop(self, "snippets_use_standard_template")
 
-        layout.label(text='Enter secondary folder filepath to scan:')
+        col.label(text='Enter secondary folder filepath to scan:')
         ### multi paths UIlist
-        row = layout.row()
+        row = col.row()
         row.template_list("SNIPPETSLIB_UL_libpath", "", self, "multipath", self, "multipath_index", rows=2)
-        col = row.column(align=True)
-        col.operator("sniptool.multi_path_action", icon='ADD', text="").action = 'ADD'#NEWFOLDER
-        col.operator("sniptool.multi_path_action", icon='REMOVE', text="").action = 'REMOVE'
-
+        sidecol = row.column(align=True)
+        sidecol.operator("sniptool.multi_path_action", icon='ADD', text="").action = 'ADD'#NEWFOLDER
+        sidecol.operator("sniptool.multi_path_action", icon='REMOVE', text="").action = 'REMOVE'
 
         layout = self.layout
         ### Saving format
@@ -222,55 +223,53 @@ class snippetsPreferences(bpy.types.AddonPreferences):
         # layout.prop(self, "snippets_save_as_py")# format choice
 
         ### UI preferences
-        layout.separator()
-        layout.label(text='Preview preferences:')
-        layout.prop(self, "snippets_preview_line_number")
+        col = layout.column(align=False)
+        col.separator()
+        col.label(text='Preview preferences:')
+        col.prop(self, "snippets_preview_line_number")
 
-        layout.separator()
-        layout.label(text="When creating new text block, what properties to activate :")
-        layout.prop(self, "snippets_show_line_numbers")
-        layout.prop(self, "snippets_show_word_wrap")
-        layout.prop(self, "snippets_show_syntax_highlight")
-        layout.prop(self, "snippets_show_line_highlight")     
+        col.separator()
+        col.label(text="When creating new text block, what properties to activate :")
+        col.prop(self, "snippets_show_line_numbers")
+        col.prop(self, "snippets_show_word_wrap")
+        col.prop(self, "snippets_show_syntax_highlight")
+        col.prop(self, "snippets_show_line_highlight")     
 
-        layout.separator()
-        layout.label(text="Convert the library to external editor format:")
-        layout.label(text="Sublime Text, VScode, Atom")
+        col.separator()
+        col.label(text="Convert the library to external editor format:")
+        col.label(text="Sublime Text, VScode, Atom")
 
-        layout.prop(self, "snippets_convertpath_sublime")
-        layout.prop(self, "snippets_convertpath_vscode")
-        layout.prop(self, "snippets_convertpath_atom")
-        layout.prop(self, "snippets_convert_open")
-        layout.label(text="If paths above are not set, destination will be a folder 'converted_snippets' in the addon folder")
-        
+        col.prop(self, "snippets_convertpath_sublime")
+        col.prop(self, "snippets_convertpath_vscode")
+        col.prop(self, "snippets_convertpath_atom")
+        col.prop(self, "snippets_convert_open")
+        col.label(text="If paths above are not set, destination will be a folder 'converted_snippets' in the addon folder")
 
-        row=layout.row(align=True)
+        row=col.row(align=True)
         row.operator('sniptool.convert', text='All').convertid = 0
         row.operator('sniptool.convert', text='Sublime').convertid = 1
         row.operator('sniptool.convert', text='VScode').convertid = 2
         row.operator('sniptool.convert', text='Atom').convertid = 3
-        row=layout.row()
-        row.label
 
 # register
 ##################################
 
 classes = (
+SNIPPETSLIB_pathProp,
+SNIPPETSLIB_sniptoolProp,
+snippetsPreferences,
 SNIPPETSLIB_OT_actions,
 SNIPPETSLIB_OT_saveSnippet,
 SNIPPETSLIB_OT_insertTemplate,
 SNIPPETSLIB_OT_reloadItems,
 SNIPPETSLIB_OT_OpenSnippetsFolder,
-SNIPPETSLIB_sniptoolProp,
 SNIPPETSLIB_UL_items,
 SNIPPETSLIB_PT_uiList,
 SNIPPETSLIB_OT_deleteSnippet,
 # SNIPPETSLIB_OT_searchItems,
 SNIPPETSLIB_OT_convert,
 SNIPPETSLIB_OT_libPathactions,
-SNIPPETSLIB_pathProp,
 SNIPPETSLIB_UL_libpath,
-snippetsPreferences,
 )
 
 import traceback
@@ -282,7 +281,7 @@ def register():
     except:
         traceback.print_exc()
 
-    print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
+    # print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
     bpy.types.Scene.sniptool = bpy.props.CollectionProperty(type=SNIPPETSLIB_sniptoolProp)
     bpy.types.Scene.sniptool_index = bpy.props.IntProperty(update=update_func)
     bpy.types.Scene.sniptool_preview = bpy.props.StringProperty()
