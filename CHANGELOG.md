@@ -1,5 +1,9 @@
 ## Changelog
 
+0.6.1 - 2024-12-09
+
+- fixed: potential issue with addon folder name
+
 0.6.0 - 2023-12-13
 
 - fixed: api changes for Blender 4.0.0
