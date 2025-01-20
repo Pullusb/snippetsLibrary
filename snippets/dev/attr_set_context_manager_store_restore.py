@@ -1,9 +1,10 @@
 ## context manager to store restore
 
 class attr_set():
-    '''Receive a list of tuple [(data_path, "attribute" [, wanted value)] ]
-    entering with-statement : Store existing values, assign wanted value (if any)
-    exiting with-statement: Restore values to their old values
+    '''Store-set-restore attributes for context manager.
+    Receive a list of tuple [(data_path, "attribute" [, new value)] ]
+    Entering with-statement : Store current attributes values, assign new value (if provided)
+    Exiting with-statement: Restore attributes old values in reverse order
     '''
 
     def __init__(self, attrib_list):
@@ -19,7 +20,7 @@ class attr_set():
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        for prop, attr, old_val in self.store:
+        for prop, attr, old_val in reversed(self.store):
             setattr(prop, attr, old_val)
 
 
