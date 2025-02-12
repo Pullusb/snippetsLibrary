@@ -16,15 +16,15 @@ def dump_edges(ob, decimal=7, evaluated=True, as_vector2=False, multiplier=1) ->
     """Mesh edges as a flat list of vector pair coordinates
     
     Args:
-        ob: object to get edge from (has to be of mesh type)
-        decimal: how many decimals to keep (ex: 2 -> 1.23)
-        evaluated: wether to evaluate mesh after enabled modifiers are applied
-        as_vector2: keep only xy coordinate (e.g: usefull to trace icons)
-        multiplier: multiplier for the coordinates
-           useful in 2D mode(as_vector2). At 10, one blender unit is 10px long
+        ob: Object to get edge from (has to be of mesh type)
+        decimal: How many decimals to keep (ex: 2 -> 1.23). Note: with simple print, Blender show 16 decimals 
+        evaluated: Wether to evaluate mesh after enabled modifiers are applied
+        as_vector2: Keep only xy coordinate (e.g: usefull to trace icons)
+        multiplier: Multiplier for the coordinates
+            useful in 2D mode(as_vector2). At 10, one blender unit is 10px long
         
     Example:
-        for an 2d output like an icon, set as_vector2 to True, a multipllier of 20, with decimal to 0
+        For an 2d output like an icon, set as_vector2 to True, a multipllier of 20, with decimal to 0
 
     Return:
         String representation of the list with name of object as assigned variable
