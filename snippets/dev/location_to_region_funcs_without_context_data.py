@@ -417,13 +417,13 @@ def region_2d_to_origin_3d_list(coords, *, region_width=None, region_height=None
 
 def region_2d_to_location_3d_list(coords, depth_location, *, region_width=None, region_height=None, view_matrix=None, perspective_matrix=None, is_perspective=None, view_perspective=None):
     """
-    Return 3d locations from the region relative 2d coords, aligned with *depth_location*.
+    Return 3d locations from the region relative 2d coords, aligned with *depth_location* or *depth_locations*.
 
     :arg coords: List of 2d coordinates relative to the region: [[x1, y1], [x2, y2], ...].
     :type coords: list of 2d vectors
     :arg depth_location: the returned vectors depth is aligned with this since
-       there is no defined depth with a 2d region input.
-    :type depth_location: 3d vector
+       there is no defined depth with a 2d region input. Can be a single 3d vector or a matching list of 3d vectors (one per coord).
+    :type depth_location: 3d vector or list of 3d vectors
     :arg region_width: width of the region in pixels. If None, uses bpy.context.region.width.
     :type region_width: int | None
     :arg region_height: height of the region in pixels. If None, uses bpy.context.region.height.
@@ -449,7 +449,7 @@ def region_2d_to_location_3d_list(coords, depth_location, *, region_width=None, 
         is_perspective = is_perspective if is_perspective is not None else context_values['is_perspective']
         view_perspective = view_perspective if view_perspective is not None else context_values['view_perspective']
     
-    # Get direction vectors and origins
+    # Get direction vectors
     coord_vecs = region_2d_to_vector_3d_list(
         coords, 
         region_width=region_width, 
@@ -458,32 +458,43 @@ def region_2d_to_location_3d_list(coords, depth_location, *, region_width=None, 
         perspective_matrix=perspective_matrix, 
         is_perspective=is_perspective
     )
-    origins = region_2d_to_origin_3d_list(
-        coords, 
-        region_width=region_width, 
-        region_height=region_height, 
-        view_matrix=view_matrix, 
-        perspective_matrix=perspective_matrix, 
-        is_perspective=is_perspective, 
-        view_perspective=view_perspective
-    )
+
+    # Check if depth_location is a list or single vector
+    is_depth_list = isinstance(depth_location, list)
     
-    depth_location = Vector(depth_location)
-    
+    if is_depth_list:
+        # List of depth locations
+        if len(depth_location) != len(coords):
+            raise ValueError(f"Number of depth_locations ({len(depth_location)}) must match number of coords ({len(coords)})")
+        depth_locations = [Vector(d) for d in depth_location]
+    else:
+        # Single depth location - convert to list for uniform processing
+        depth_locations = [Vector(depth_location)] * len(coords)
+
     results = []
     if is_perspective:
+        # For perspective, all origins are the same (camera/view position)
         viewinv = view_matrix.inverted()
+        origin = viewinv.translation.copy()
         view_vec = viewinv.col[2].xyz.copy()
         
-        for origin, coord_vec in zip(origins, coord_vecs):
-            origin_end = origin + coord_vec
-            result = intersect_line_plane(origin, origin_end, depth_location, view_vec)
-            results.append(result)
+        results = [
+            intersect_line_plane(origin, origin + coord_vec, depth_loc, view_vec)
+            for coord_vec, depth_loc in zip(coord_vecs, depth_locations)
+        ]
     else:
-        for origin, coord_vec in zip(origins, coord_vecs):
-            origin_end = origin + coord_vec
-            result = intersect_point_line(depth_location, origin, origin_end)[0]
-            results.append(result)
+        # For orthographic, each coordinate has different origin
+        origins = region_2d_to_origin_3d_list(
+            coords, 
+            region_width=region_width, region_height=region_height, 
+            view_matrix=view_matrix, perspective_matrix=perspective_matrix, 
+            is_perspective=is_perspective, view_perspective=view_perspective
+        )
+
+        results = [
+            intersect_point_line(depth_loc, origin, origin + coord_vec)[0]
+            for origin, coord_vec, depth_loc in zip(origins, coord_vecs, depth_locations)
+        ]
     
     return results
 
