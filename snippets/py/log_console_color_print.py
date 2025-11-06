@@ -1,4 +1,5 @@
-# color print in console (unix)
+## color print in console (old: look at print_color or print_color_styled for better wrapper)
+
 def _log(color, *args):
     msg = ""#log prefix
     for arg in args:
@@ -10,13 +11,10 @@ def _log(color, *args):
 def log_blue(*args):
     _log('\033[34m', *args)#blue
 
-
 def log_red(*args):
     _log('\033[31m', *args)#red
 
-
 def log_green(*args):
-    #_log('\033[1;32m', "")#jump a line
     _log('\033[1;32m', *args)#green
 
 
