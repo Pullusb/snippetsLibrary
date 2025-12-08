@@ -1,4 +1,6 @@
-## Function and operator to open addon preferences
+## Custom function and operator to open addon preferences
+## Old code! There is a native operator for this:
+## bpy.ops.preferences.addon_show(module=__package__)
 
 def open_addon_prefs():
     '''Open addon prefs windows with focus on current addon'''
@@ -9,6 +11,7 @@ def open_addon_prefs():
         wm.addon_support = set([i for i in wm.addon_support] + ['COMMUNITY'])
     wm.addon_search = bl_info['name']
     bpy.context.preferences.active_section = 'ADDONS'
+    ## here if already expanded it will collapse (so drawback is calling alternate the state)
     bpy.ops.preferences.addon_expand(module=__package__)
     bpy.ops.screen.userpref_show('INVOKE_DEFAULT')
 
