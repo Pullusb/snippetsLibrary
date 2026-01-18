@@ -1,10 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-'''
-Copyright (C) 2017 Samuel Bernou
-Bernou.samuel@gmail.com
-
-Created by Samuel Bernou
-'''
 
 bl_info = {
     "name": "Snippets Library",
