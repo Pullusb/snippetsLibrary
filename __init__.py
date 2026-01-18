@@ -10,7 +10,7 @@ bl_info = {
     "name": "Snippets Library",
     "description": "Add a library list to quickly load/save personnal texts snippets from text editor",
     "author": "Samuel Bernou",
-    "version": (0, 6, 1),
+    "version": (0, 6, 2),
     "blender": (3, 0, 0),
     "location": "Text editor > toolbar (ctrl+T) > Snippets tab",
     "warning": "",
@@ -288,7 +288,7 @@ def unregister():
     except:
         traceback.print_exc()
 
-    print("Unregistered {}".format(bl_info["name"]))
+    # print("Unregistered {}".format(bl_info["name"]))
     del bpy.types.Scene.sniptool
     del bpy.types.Scene.sniptool_index
     del bpy.types.Scene.sniptool_preview
