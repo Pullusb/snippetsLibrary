@@ -21,6 +21,8 @@ def vse_strips_all(vse=None):
 def get_vse_strips_by_type(vse=None, recursive=False, strip_type=None):
     """Return vse strips matching a given type, version agnostic.
 
+    vse: sequence_editor instance, defaults to bpy.context.scene.sequence_editor
+    recursive: if True, include strips inside meta strips (uses strips_all)
     strip_type: str or list of str (e.g. 'SOUND' or ['SOUND', 'MOVIE'])
     possible types: ['SCENE', 'MOVIE', 'IMAGE', 'SOUND', 'COLOR', 'TEXT',
         'EFFECT', 'META', 'TRANSFORM', 'ADJUSTMENT', 'MOVIECLIP', 'MASK']
@@ -34,7 +36,8 @@ def get_vse_strips_by_type(vse=None, recursive=False, strip_type=None):
 def get_enabled_vse_strips_in_scene_range(vse=None, strip_type=None):
     """Return non-muted strips overlapping the scene frame range.
 
-    strip_type: str or list of str to filter by type, or None for all types.
+    vse: sequence_editor instance, defaults to bpy.context.scene.sequence_editor
+    strip_type: str or list of str to filter by type, or None for all types
     possible types: ['SCENE', 'MOVIE', 'IMAGE', 'SOUND', 'COLOR', 'TEXT',
         'EFFECT', 'META', 'TRANSFORM', 'ADJUSTMENT', 'MOVIECLIP', 'MASK']
     """
