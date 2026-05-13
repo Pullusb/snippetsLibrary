@@ -1,15 +1,15 @@
-def transfer_value(Value, OldMin, OldMax, NewMin, NewMax):
+def transfer_value(value, old_min, old_max, new_min, new_max):
     '''map a value from a range to another (transfer/translate value)'''
-    return (((Value - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    return (((value - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
 
-def transfer_value_bis(Value, OldMin, OldMax, NewMin, NewMax):
+def transfer_value_bis(value, old_min, old_max, new_min, new_max):
     '''detailed transfer value from a range to another'''
-    OldRange = (OldMax - OldMin)  
-    NewRange = (NewMax - NewMin)  
-    NewValue = (((Value - OldMin) * NewRange) / OldRange) + NewMin
-    return NewValue
+    old_range = (old_max - old_min)  
+    new_range = (new_max - new_min)  
+    new_value = (((value - old_min) * new_range) / old_range) + new_min
+    return new_value
 
-transfer_value(${1:Value}, ${2:OldMin}, ${3:OldMax}, ${4:NewMin}, ${5:NewMax})
+transfer_value(${1:value}, ${2:old_min}, ${3:old_max}, ${4:new_min}, ${5:new_max})
 
 #oneliner
-NewValue = (((${1:Value} - ${2:OldMin}) * (${5:NewMax} - ${4:NewMin})) / (${3:OldMax} - ${2:OldMin})) + ${4:NewMin}
+new_value = (((${1:value} - ${2:old_min}) * (${5:new_max} - ${4:new_min})) / (${3:old_max} - ${2:old_min})) + ${4:new_min}

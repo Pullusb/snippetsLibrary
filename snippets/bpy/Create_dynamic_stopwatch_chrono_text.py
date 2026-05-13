@@ -3,9 +3,9 @@
 import bpy
 from math import radians
 
-def transfer_value(Value, OldMin, OldMax, NewMin, NewMax):
+def transfer_value(value, old_min, old_max, new_min, new_max):
     '''map a value from a range to another (transfer/translate value)'''
-    return (((Value - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    return (((value - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
 
 def chrono_trigger(scene):
     fps = scene.render.fps

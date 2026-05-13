@@ -11,9 +11,9 @@ on each vertices "chain"
 starting drom the tip closer to 3D cursor
 '''
 
-def transfer_value(Value, OldMin, OldMax, NewMin, NewMax):
+def transfer_value(value, old_min, old_max, new_min, new_max):
     '''map a value from a range to another (transfer/translate value)'''
-    return (((Value - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+    return (((value - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
