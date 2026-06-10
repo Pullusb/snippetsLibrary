@@ -58,14 +58,14 @@ class MYADDON_OT_export_things_in_directory(bpy.types.Operator):
     bl_description = "Export the things"
     bl_options = {"REGISTER"}
 
-    directory : StringProperty(
+    directory : bpy.props.StringProperty(
         name="File Path",
         description="File path used for export", 
         maxlen= 1024,
         subtype='DIR_PATH'
     )
 
-    ## Create similar invoke to export helper (in file "scripts/modules/bpy_extras/io_utils.py")
+    ## Similar invoke to export helper (in file "scripts/modules/bpy_extras/io_utils.py")
     ## /!\ No check method implemented here
     def invoke(self, context, _event):
         if not self.directory:
@@ -76,3 +76,23 @@ class MYADDON_OT_export_things_in_directory(bpy.types.Operator):
 
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
+
+## Most Barebone version (select a directory to do something):
+
+class IMPORT_OT_my_folder_manual(bpy.types.Operator):
+    """Import from a folder (no ImportHelper)"""
+    bl_idname = "import_test.folder_manual"
+    bl_label = "Import Folder"
+
+    directory: bpy.props.StringProperty(
+        name="Directory",
+        subtype='DIR_PATH',
+    )
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        print(f"Selected directory: {self.directory}")
+        return {'FINISHED'}
