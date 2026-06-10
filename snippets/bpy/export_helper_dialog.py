@@ -1,4 +1,4 @@
-## Operator disalog with or without Export helper class
+## Operator dialog with or without Export helper class
 
 class MYADDON_OT_export_things(bpy.types.Operator, ExportHelper):
     bl_idname = "myaddon.export_things"
@@ -48,6 +48,9 @@ class MYADDON_OT_export_things(bpy.types.Operator, ExportHelper):
         self.report({'INFO'}, f'File saved at: {self.filepath}')
         return {"FINISHED"}
 
+## Test
+# bpy.utils.register_class(MYADDON_OT_export_things)
+# bpy.ops.myaddon.export_things('INVOKE_DEFAULT')
 
 ## Export to a Directory (use with your own draw and execute function)
 from pathlib import Path
@@ -77,7 +80,11 @@ class MYADDON_OT_export_things_in_directory(bpy.types.Operator):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
-## Most Barebone version (select a directory to do something):
+## Test
+# bpy.utils.register_class(MYADDON_OT_export_things_in_directory)
+# bpy.ops.myaddon.export_things_in_directory('INVOKE_DEFAULT')
+
+## Defining only directory gets a directory picker:
 
 class IMPORT_OT_my_folder_manual(bpy.types.Operator):
     """Import from a folder (no ImportHelper)"""
@@ -96,3 +103,75 @@ class IMPORT_OT_my_folder_manual(bpy.types.Operator):
     def execute(self, context):
         print(f"Selected directory: {self.directory}")
         return {'FINISHED'}
+
+## Test
+# bpy.utils.register_class(IMPORT_OT_my_folder_manual)
+# bpy.ops.import_test.folder_manual('INVOKE_DEFAULT')
+
+## Full Class with all available 
+
+# filepath — full path to the selected file (subtype='FILE_PATH')
+# filename — just the file name portion
+# directory — the directory path (subtype='DIR_PATH')
+# files — a CollectionProperty of selected files (for multi-select)
+# filter_glob — extension filter, e.g. "*.png;*.jpg" (typically options={'HIDDEN'})
+
+import bpy
+from bpy.props import StringProperty, CollectionProperty
+
+class IMPORT_OT_my_file_full(bpy.types.Operator):
+    """Import files with all fileselect properties"""
+    bl_idname = "import_test.file_full"
+    bl_label = "Import Files"
+
+    filepath: StringProperty(
+        name="File Path",
+        description="Full path to the selected file",
+        subtype='FILE_PATH',
+    )
+
+    filename: StringProperty(
+        name="File Name",
+        description="Name of the selected file",
+    )
+
+    directory: StringProperty(
+        name="Directory",
+        description="Directory of the selected file",
+        subtype='DIR_PATH',
+    )
+
+    files: CollectionProperty(
+        name="Files",
+        description="All selected files (multi-select)",
+        type=bpy.types.OperatorFileListElement,
+    )
+
+    filter_glob: StringProperty(
+        default="*.png;*.jpg;*.exr",
+        description="Extension filter",
+        options={'HIDDEN'},
+        maxlen=255,
+    )
+
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        import os
+
+        print(f"filepath:  {self.filepath}")
+        print(f"filename:  {self.filename}")
+        print(f"directory: {self.directory}")
+
+        # Iterate multi-selected files
+        for f in self.files:
+            full_path = os.path.join(self.directory, f.name)
+            print(f"  file: {full_path}")
+
+        return {'FINISHED'}
+
+## Test
+# bpy.utils.register_class(IMPORT_OT_my_file_full)
+# bpy.ops.import_test.file_full('INVOKE_DEFAULT')
