@@ -1,30 +1,36 @@
 ## Get fcurves whatever the blender version, either as datablock object or as list
+## note: can also access without anim_utils wrappers: animation_data.action.layers[0].strips[0].channelbags[0].fcurves
 
 import bpy
 
-def ensure_channelbag(data_block):
-    """Utility to returns the channelbag of f-curves for a given ID.
-    Or `None` if the ID doesn't have an animation data, an action, or a slot.
+def _get_first_channelbag(action):
+    """Return the first channelbag found on the action's first layer/strip, or `None`.
+    Used as a fallback when an action has no slot assigned (read-only, creates nothing).
+    """
+    if not action or not action.layers:
+        return None
+    strips = action.layers[0].strips
+    if not strips:
+        return None
+    channelbags = strips[0].channelbags
+    return channelbags[0] if channelbags else None
+
+def get_channelbag(data_block):
+    """Utility to return the channelbag of f-curves for a given ID (read-only, creates nothing).
+    Falls back to the action's first channelbag if no slot is assigned.
+    Or `None` if the ID doesn't have animation data or an action.
     """
 
-    if data_block.animation_data is None:
-        return None
-
     anim_data = data_block.animation_data
-    if anim_data.action is None:
+    if not anim_data or not anim_data.action:
         return None
 
     action = anim_data.action
-    if action.is_empty:
-        return None
+    if anim_data.action_slot:
+        from bpy_extras.anim_utils import action_get_channelbag_for_slot
+        return action_get_channelbag_for_slot(action, anim_data.action_slot)
 
-    if anim_data.action_slot is None:
-        return None
-
-    from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
-    channelbag = action_ensure_channelbag_for_slot(action, anim_data.action_slot)
-
-    return channelbag
+    return _get_first_channelbag(action)
 
 def get_fcurves_from_object(obj, path='') -> list:
     """Return a list all f-curves of the object
@@ -40,7 +46,7 @@ def get_fcurves_from_object(obj, path='') -> list:
             return [fc for fc in obj.animation_data.action.fcurves]
         return [fc for fc in obj.animation_data.action.fcurves if fc.data_path == path]
 
-    channelbag = ensure_channelbag(obj)
+    channelbag = get_channelbag(obj)
     if channelbag is None:
         return []
 
@@ -53,11 +59,10 @@ def get_fcurves(src, path='', slot=None) -> list:
     """Return a list all f-curves from the passed object/anim_data/action
     path (str, optional): if given, filter returned f-curves by data_path
     slot (action_slot, optional): if an action slot is passed, directly use this action + slot.
-        if not passed: get the active slot (first slot if a single action is passed)
+        if not passed: use the assigned slot (or the action's first channelbag as fallback)
     return empty list if nothing is found
     """
-    
-    obj = None
+
     anim_data = None
     if isinstance(src, bpy.types.AnimData):
         # case of anim_data, passed
@@ -67,52 +72,34 @@ def get_fcurves(src, path='', slot=None) -> list:
             return []
 
     elif isinstance(src, bpy.types.Action):
-       action = src
-    
+        action = src
+
     else:
         # object of data containing an anim_data
-        obj = src
-        anim_data = obj.animation_data
+        anim_data = src.animation_data
         if not anim_data or not anim_data.action:
             return []
-        action = obj.animation_data.action
+        action = anim_data.action
 
     if bpy.app.version < (5, 0, 0):
+        # Code for blender before 5.0
         if not path:
             return [fc for fc in action.fcurves]
         return [fc for fc in action.fcurves if fc.data_path == path]
 
-    from bpy_extras.anim_utils import action_ensure_channelbag_for_slot
-    # ensure or get ? : animdata_get_channelbag_for_assigned_slot 
-
-    if action.is_empty:
-        return []
-
-    if slot is None:
-        if anim_data:
-            if not anim_data.action_slot:
-                ## TODO: add a "return first slot when nothing active" ?
-                ## -> could return animation_data.action.layers[0].strips[0].channelbags[0].fcurves
-                return []
-            slot = anim_data.action_slot
-            # print('active_slot from anim_data:', slot)
-
-        elif action:
-            # directly check on action
-            if not action.slots:
-                print(f'{action.name}: no slots on action')
-                return []
-            ## TODO: add a method to filter by name or by object
-            # use first slot
-            print(f'{action.name}: using first slot')
-            # (should probably do it by name instead of first)
-            slot = action.slots[0]
-
-    channelbag = action_ensure_channelbag_for_slot(action, slot)
+    if slot is not None:
+        from bpy_extras.anim_utils import action_get_channelbag_for_slot
+        channelbag = action_get_channelbag_for_slot(action, slot)
+    elif anim_data and anim_data.action_slot:
+        from bpy_extras.anim_utils import action_get_channelbag_for_slot
+        channelbag = action_get_channelbag_for_slot(action, anim_data.action_slot)
+    else:
+        # no slot given/assigned: fall back to the action's first channelbag
+        channelbag = _get_first_channelbag(action)
 
     if channelbag is None:
         return []
-    
+
     if not path:
         return [fc for fc in channelbag.fcurves]
 
@@ -127,7 +114,7 @@ def get_fcurves_datablock(data_block):
         return
     if bpy.app.version < (5, 0, 0):
         return data_block.animation_data.action.fcurves
-    channelbag = ensure_channelbag(data_block)
+    channelbag = get_channelbag(data_block)
     if channelbag:
         return channelbag.fcurves
 
