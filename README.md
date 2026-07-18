@@ -17,7 +17,7 @@ Allow you use and manage a library of your own code snippets.
 Works well in combination with [devTools](https://github.com/Pullusb/devTools) to make your scripting life easier.  
 
 A new _Snippets_ tab will be in the text editor's toolbar (accessible with `ctrl + T`).  
-Snippets will be saved and stored as invidual plain text files in a folder named 'snippets'.  
+Snippets will be saved and stored as individual plain text files in a folder named 'snippets'.  
 This folder is located by default alongside the addon files (unless you enter a custom path in addon preferences).  
 Blender build-in snippets are also scanned (you can disable it in addon pref).  
 The addon is shipped with my personal pack of usefull code snippets (all free to use)  
