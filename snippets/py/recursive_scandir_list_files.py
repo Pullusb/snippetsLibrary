@@ -75,7 +75,7 @@ def recursive_scan_ext(fp, ext=('.blend',), depth=-1, files=None) -> list:
 
     return files
 
-# string version, Same as recursive_scandir but accumulates strings instead of Path objects.
+# String version, same as recursive_scandir but accumulates strings instead of Path objects.
 # Isolates the cost of Path instantiation from the cost of the traversal, gain ~11% speed
 def recursive_scandir_str(fp, depth=-1, files=None):
     """Recursive scandir return list of strings with error handling and explicit handle release.
@@ -103,7 +103,7 @@ def recursive_scandir_str(fp, depth=-1, files=None):
                     if f.is_dir(follow_symlinks=False):
                         subdirs.append(f.path)
                     elif f.is_file():
-                        append(f.path) # keeping stre instead or Path gain ~11% scan speed
+                        append(f.path) # keeping str (instead of Path) gain ~11% scan speed
                 except OSError:
                     continue
     except OSError:
@@ -116,8 +116,9 @@ def recursive_scandir_str(fp, depth=-1, files=None):
     return files
 
 
-'''
-# Simple version with depth control (same speed, no error handling)
+''' Old versions without error handling, symlink protection, etc. (same speed) still fine in most cases
+
+# Simple version with depth control
 def recursive_scandir(fp, depth=-1, files=None) -> list:
     """depth: 0=no recusion, 1=one sublevel, -1=unlimited
     return file list as path objects
@@ -133,7 +134,7 @@ def recursive_scandir(fp, depth=-1, files=None) -> list:
 
     return files
 
-# Simplest (same speed, no error handling)
+# Simplest
 def recursive_scandir(fp, files=None) -> list:
     """return recursive file list as path objects"""
     files = [] if files is None else files
